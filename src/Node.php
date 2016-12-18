@@ -3,7 +3,6 @@
 
 namespace Hexogen\KDTree;
 
-
 class Node
 {
     private $item;
@@ -13,11 +12,12 @@ class Node
     public function __construct(Item $item)
     {
         $this->item = $item;
-        $this->left = NULL;
-        $this->right = NULL;
+        $this->left = null;
+        $this->right = null;
     }
 
-    public function getItem() {
+    public function getItem()
+    {
         return $this->item;
     }
 

@@ -74,5 +74,4 @@ class ItemList
             throw new ValidationException('$dValues number dimensions should be equal to ' . $this->dimensions);
         }
     }
-
 }

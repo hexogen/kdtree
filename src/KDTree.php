@@ -60,7 +60,7 @@ class KDTree
             }
         }
 
-        $this->root = NULL;
+        $this->root = null;
         if ($this->lenght > 0) {
             $hi = $this->lenght - 1;
             $mid = (int)($hi / 2);
@@ -74,7 +74,7 @@ class KDTree
                 $this->root->setRight($this->buildSubTree($mid + 1, $hi, 1));
             }
         }
-        $this->items = NULL;
+        $this->items = null;
     }
 
     /**
@@ -126,7 +126,7 @@ class KDTree
             $j = $this->partition($lo, $hi, $d);
             if ($j > $k) {
                 $hi = $j - 1;
-            } else if ($j < $k) {
+            } elseif ($j < $k) {
                 $lo = $j + 1;
             } else {
                 return $this->items[$k];
@@ -149,14 +149,20 @@ class KDTree
         $val = $v->getNthDimension($d);
         while (true) {
             while ($this->items[++$i]->getNthDimension($d) < $val) {
-                if ($i == $hi) break;
+                if ($i == $hi) {
+                    break;
+                }
             }
 
             while ($this->items[--$j]->getNthDimension($d) > $val) {
-                if ($j == $lo) break;
+                if ($j == $lo) {
+                    break;
+                }
             }
 
-            if ($i >= $j) break;
+            if ($i >= $j) {
+                break;
+            }
 
             $this->exch($i, $j);
         }

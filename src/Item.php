@@ -71,7 +71,7 @@ class Item
     /**
      * @return int number of dimensions in array
      */
-    public function getDimensionsCount() : int
+    public function getDimensionsCount(): int
     {
         return $this->length;
     }
