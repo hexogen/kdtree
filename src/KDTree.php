@@ -11,7 +11,7 @@ class KDTree
     private $root;
 
     /**
-     * @var Item[]
+     * @var Item[]|null array of items or null after tree has been built
      */
     private $items;
 
