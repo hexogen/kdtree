@@ -1,36 +1,37 @@
 {
-    "name": ":vendor/:package_name",
+    "name": "hexogen/kdtree",
     "type": "library",
-    "description": ":package_description",
+    "description": "file system KDTree index",
     "keywords": [
-        ":vendor",
-        ":package_name"
+        "hexogen",
+        "kdtree"
     ],
-    "homepage": "https://github.com/:vendor/:package_name",
+    "homepage": "https://github.com/hexogen/kdtree",
     "license": "MIT",
     "authors": [
         {
-            "name": ":author_name",
-            "email": ":author_email",
-            "homepage": ":author_website",
+            "name": "Volodymyr Basarab",
+            "email": "volodymyrbas@gmail.com",
+            "homepage": "https://github.com/hexogen",
             "role": "Developer"
         }
     ],
     "require": {
-        "php" : "~5.6|~7.0"
+        "php" : "~7.0"
     },
     "require-dev": {
         "phpunit/phpunit" : "~4.0||~5.0",
-        "squizlabs/php_codesniffer": "^2.3"
+        "squizlabs/php_codesniffer": "^2.3",
+        "mockery/mockery": "dev-master"
     },
     "autoload": {
         "psr-4": {
-            ":vendor\\:package_name\\": "src"
+            "Hexogen\\KDTree\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            ":vendor\\:package_name\\": "tests"
+            "Hexogen\\KDTree\\": "tests"
         }
     },
     "scripts": {
