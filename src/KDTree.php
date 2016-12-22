@@ -40,37 +40,10 @@ class KDTree implements KDTreeInterface
         $this->items = $itemList->getItems();
         $this->length = count($this->items);
 
-        $this->maxBoundary = [];
-        $this->minBoundary = [];
+        $this->setBoundaries();
 
-        for ($i = 0; $i < $this->dimensions; $i++) {
-            $this->maxBoundary[$i] = -INF;
-            $this->minBoundary[$i] = INF;
-        }
+        $this->buildTree();
 
-        foreach ($this->items as $item) {
-            for ($i = 0; $i < $this->dimensions; $i++) {
-                $this->maxBoundary[$i] = max($this->maxBoundary[$i], $item->getNthDimension($i));
-                $this->minBoundary[$i] = min($this->minBoundary[$i], $item->getNthDimension($i));
-            }
-        }
-
-        $this->root = null;
-        if ($this->length > 0) {
-            $hi = $this->length - 1;
-            $mid = (int)($hi / 2);
-            $item = $this->select($mid, 0, $hi, 0);
-
-            $this->root = new Node($item);
-
-            $nextDimension = 1 % $this->dimensions;
-            if ($mid > 0) {
-                $this->root->setLeft($this->buildSubTree(0, $mid - 1, $nextDimension));
-            }
-            if ($mid < $hi) {
-                $this->root->setRight($this->buildSubTree($mid + 1, $hi, $nextDimension));
-            }
-        }
         $this->items = null;
     }
 
@@ -179,5 +152,42 @@ class KDTree implements KDTreeInterface
         $this->exch($lo, $j);
 
         return $j;
+    }
+
+    private function setBoundaries()
+    {
+        $this->maxBoundary = [];
+        $this->minBoundary = [];
+
+        for ($i = 0; $i < $this->dimensions; $i++) {
+            $this->maxBoundary[$i] = -INF;
+            $this->minBoundary[$i] = INF;
+        }
+
+        foreach ($this->items as $item) {
+            for ($i = 0; $i < $this->dimensions; $i++) {
+                $this->maxBoundary[$i] = max($this->maxBoundary[$i], $item->getNthDimension($i));
+                $this->minBoundary[$i] = min($this->minBoundary[$i], $item->getNthDimension($i));
+            }
+        }
+    }
+
+    private function buildTree()
+    {
+        if ($this->length > 0) {
+            $hi = $this->length - 1;
+            $mid = (int)($hi / 2);
+            $item = $this->select($mid, 0, $hi, 0);
+
+            $this->root = new Node($item);
+
+            $nextDimension = 1 % $this->dimensions;
+            if ($mid > 0) {
+                $this->root->setLeft($this->buildSubTree(0, $mid - 1, $nextDimension));
+            }
+            if ($mid < $hi) {
+                $this->root->setRight($this->buildSubTree($mid + 1, $hi, $nextDimension));
+            }
+        }
     }
 }
