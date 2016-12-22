@@ -3,43 +3,60 @@
 
 namespace Hexogen\KDTree;
 
-class Node
+class Node implements NodeInterface
 {
+    /**
+     * @var ItemInterface
+     */
     private $item;
+
+    /**
+     * @var NodeInterface|null
+     */
     private $left;
+
+    /**
+     * @var NodeInterface|null
+     */
     private $right;
 
-    public function __construct(Item $item)
+    /**
+     * Node constructor.
+     * @param ItemInterface $item
+     */
+    public function __construct(ItemInterface $item)
     {
         $this->item = $item;
         $this->left = null;
         $this->right = null;
     }
 
-    public function getItem()
+    /**
+     * @return ItemInterface get item from the node
+     */
+    public function getItem() : ItemInterface
     {
         return $this->item;
     }
 
     /**
-     * @param Node $node
+     * @param NodeInterface $node set right node
      */
-    public function setRight(Node $node)
+    public function setRight(NodeInterface $node)
     {
         $this->right = $node;
     }
 
     /**
-     * @param Node $node
+     * @param NodeInterface $node set left node
      */
-    public function setLeft(Node $node)
+    public function setLeft(NodeInterface $node)
     {
         $this->left = $node;
     }
 
     /**
-     * @api
-     * @return Node|null
+     * @return NodeInterface|null get right node
      */
     public function getRight()
     {
@@ -47,8 +64,7 @@ class Node
     }
 
     /**
-     * @api
-     * @return Node|null
+     * @return NodeInterface|null get left node
      */
     public function getLeft()
     {

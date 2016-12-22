@@ -1,17 +1,16 @@
 <?php
 
-
 namespace Hexogen\KDTree;
 
-class KDTree
+class KDTree implements KDTreeInterface
 {
     /**
-     * @var Node
+     * @var NodeInterface
      */
     private $root;
 
     /**
-     * @var Item[]|null array of items or null after tree has been built
+     * @var ItemInterface[]|null array of items or null after tree has been built
      */
     private $items;
 
@@ -28,22 +27,18 @@ class KDTree
     /**
      * @var int number of items in the tree
      */
-    private $lenght;
+    private $length;
 
     /**
      * @var int
      */
     private $dimensions;
 
-    /**
-     * KDTree constructor.
-     * @param ItemList $itemList
-     */
     public function __construct(ItemList $itemList)
     {
-        $this->dimensions = $itemList->getDimensionNumber();
+        $this->dimensions = $itemList->getDimensionCount();
         $this->items = $itemList->getItems();
-        $this->lenght = count($this->items);
+        $this->length = count($this->items);
 
         $this->maxBoundary = [];
         $this->minBoundary = [];
@@ -56,35 +51,52 @@ class KDTree
         foreach ($this->items as $item) {
             for ($i = 0; $i < $this->dimensions; $i++) {
                 $this->maxBoundary[$i] = max($this->maxBoundary[$i], $item->getNthDimension($i));
-                $this->minBoundary[$i] = min($this->maxBoundary[$i], $item->getNthDimension($i));
+                $this->minBoundary[$i] = min($this->minBoundary[$i], $item->getNthDimension($i));
             }
         }
 
         $this->root = null;
-        if ($this->lenght > 0) {
-            $hi = $this->lenght - 1;
+        if ($this->length > 0) {
+            $hi = $this->length - 1;
             $mid = (int)($hi / 2);
             $item = $this->select($mid, 0, $hi, 0);
 
             $this->root = new Node($item);
+
+            $nextDimension = 1 % $this->dimensions;
             if ($mid > 0) {
-                $this->root->setLeft($this->buildSubTree(0, $mid - 1, 1));
+                $this->root->setLeft($this->buildSubTree(0, $mid - 1, $nextDimension));
             }
             if ($mid < $hi) {
-                $this->root->setRight($this->buildSubTree($mid + 1, $hi, 1));
+                $this->root->setRight($this->buildSubTree($mid + 1, $hi, $nextDimension));
             }
         }
         $this->items = null;
     }
 
-    /**
-     * get kd tree root
-     *
-     * @return Node|null
-     */
-    public function getRoot()
+    public function getItemCount(): int
+    {
+        return $this->length;
+    }
+
+    public function getRoot(): NodeInterface
     {
         return $this->root;
+    }
+
+    public function getMinBoundary(): array
+    {
+        return $this->minBoundary;
+    }
+
+    public function getMaxBoundary(): array
+    {
+        return $this->maxBoundary;
+    }
+
+    public function getDimensionCount(): int
+    {
+        return $this->dimensions;
     }
 
     private function buildSubTree(int $lo, int $hi, int $d): Node
@@ -118,7 +130,7 @@ class KDTree
      * @param int $lo
      * @param int $hi
      * @param int $d
-     * @return Item
+     * @return ItemInterface
      */
     private function select(int $k, int $lo, int $hi, int $d)
     {
@@ -155,9 +167,6 @@ class KDTree
             }
 
             while ($this->items[--$j]->getNthDimension($d) > $val) {
-                if ($j == $lo) {
-                    break;
-                }
             }
 
             if ($i >= $j) {

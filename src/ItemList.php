@@ -32,9 +32,9 @@ class ItemList
     /**
      * Add or replace an item in the item list
      *
-     * @param Item $item
+     * @param ItemInterface $item
      */
-    public function addItem(Item $item)
+    public function addItem(ItemInterface $item)
     {
         $this->validateItem($item);
         $id = $item->getId();
@@ -49,7 +49,7 @@ class ItemList
     }
 
     /**
-     * @return Item[]
+     * @return ItemInterface[]
      */
     public function getItems(): array
     {
@@ -59,16 +59,16 @@ class ItemList
     /**
      * @return int number of dimensions in item
      */
-    public function getDimensionNumber(): int
+    public function getDimensionCount(): int
     {
         return $this->dimensions;
     }
 
     /**
-     * @param Item $item
+     * @param ItemInterface $item
      * @throws ValidationException
      */
-    private function validateItem(Item $item)
+    private function validateItem(ItemInterface $item)
     {
         if ($item->getDimensionsCount() !== $this->dimensions) {
             throw new ValidationException('$dValues number dimensions should be equal to ' . $this->dimensions);

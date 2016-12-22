@@ -1,5 +1,7 @@
 <?php
 
+namespace Hexogen\KDTree\Tests;
+
 use Hexogen\KDTree\Exception\ValidationException;
 use Hexogen\KDTree\Item;
 
@@ -19,14 +21,16 @@ class ItemTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_should_create_instance_of_an_object() {
+    public function itShouldCreateInstanceOfAnObject()
+    {
         $this->assertInstanceOf(Item::class, $this->instance);
     }
 
     /**
      * @test
      */
-    public function is_should_NOT_create_an_instance() {
+    public function isShouldNotCreateAnInstance()
+    {
         try {
             $item = new Item(11, [0.1, 1.1, 2.1, 3.1, 1.1, 6 => 2.1]);
             $this->fail('ValidationException should be thrown');
@@ -45,14 +49,16 @@ class ItemTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_should_get_item_id() {
+    public function itShouldGetItemId()
+    {
         $this->assertEquals(11, $this->instance->getId());
     }
 
     /**
      * @test
      */
-    public function it_should_get_dimension_value() {
+    public function itShouldGetDimensionValue()
+    {
         foreach ([0.1, 1.1, 2.1, 3.1, 1.1] as $i => $value) {
             $this->assertEquals($value, $this->instance->getNthDimension($i));
         }
@@ -60,16 +66,18 @@ class ItemTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @expectedException OutOfRangeException
+     * @expectedException \OutOfRangeException
      */
-    public function it_should_NOT_get_dimension_value() {
+    public function itShouldNotGetDimensionValue()
+    {
         $this->instance->getNthDimension(5);
     }
 
     /**
      * @test
      */
-    public function it_should_get_number_of_dimensions_in_the_item() {
+    public function itShouldGetNumberOfDimensionsInTheItem()
+    {
         $item = new Item(11, [0.1]);
         $this->assertEquals(1, $item->getDimensionsCount());
         $item = new Item(11, [0.1, 1.1]);
@@ -77,5 +85,4 @@ class ItemTest extends \PHPUnit_Framework_TestCase
         $item = new Item(11, [0.1, 1.1, 2.1, 3.1, 1.1]);
         $this->assertEquals(5, $item->getDimensionsCount());
     }
-
 }

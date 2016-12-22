@@ -1,5 +1,6 @@
 <?php
 
+namespace Hexogen\KDTree\Tests;
 
 use Hexogen\KDTree\Exception\ValidationException;
 use Hexogen\KDTree\Item;
@@ -21,7 +22,8 @@ class ItemListTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_should_NOT_create_an_instance() {
+    public function itShouldNotCreateAnInstance()
+    {
         try {
             $itemList = new ItemList(-1);
             $this->fail('ValidationException should be thrown');
@@ -33,21 +35,23 @@ class ItemListTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_should_get_dimension_number() {
+    public function itShouldGetDimensionNumber()
+    {
         $itemList = new ItemList(1);
-        $this->assertEquals(1, $itemList->getDimensionNumber());
+        $this->assertEquals(1, $itemList->getDimensionCount());
 
         $itemList = new ItemList(3);
-        $this->assertEquals(3, $itemList->getDimensionNumber());
+        $this->assertEquals(3, $itemList->getDimensionCount());
 
         $itemList = new ItemList(7);
-        $this->assertEquals(7, $itemList->getDimensionNumber());
+        $this->assertEquals(7, $itemList->getDimensionCount());
     }
 
     /**
      * @test
      */
-    public function it_should_add_item_to_the_list() {
+    public function itShouldAddItemToTheList()
+    {
         $item = new Item(1, [1.2, 2.3]);
         $this->instance->addItem($item);
 
@@ -71,7 +75,8 @@ class ItemListTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_should_NOT_add_item_to_the_list() {
+    public function itShouldNotAddItemToTheList()
+    {
         try {
             $item = new Item(1, [2.5]);
             $this->instance->addItem($item);
