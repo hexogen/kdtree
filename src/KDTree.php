@@ -10,7 +10,7 @@ class KDTree implements KDTreeInterface
     private $root;
 
     /**
-     * @var ItemInterface[] array of items or null after tree has been built
+     * @var ItemInterface[]|null array of items or null after tree has been built
      */
     private $items;
 
@@ -40,11 +40,11 @@ class KDTree implements KDTreeInterface
         $this->items = $itemList->getItems();
         $this->length = count($this->items);
 
-        $this->setBoundaries();
+        $this->setBoundaries($this->items);
 
         $this->buildTree();
 
-        $this->items = null;
+        unset($this->items);
     }
 
     public function getItemCount(): int
@@ -150,7 +150,11 @@ class KDTree implements KDTreeInterface
         return $j;
     }
 
-    private function setBoundaries()
+    /**
+     *  Set boundaries for given item list
+     * @param ItemInterface[] $items
+     */
+    private function setBoundaries(array $items)
     {
         $this->maxBoundary = [];
         $this->minBoundary = [];
@@ -160,7 +164,7 @@ class KDTree implements KDTreeInterface
             $this->minBoundary[$i] = INF;
         }
 
-        foreach ($this->items as $item) {
+        foreach ($items as $item) {
             for ($i = 0; $i < $this->dimensions; $i++) {
                 $this->maxBoundary[$i] = max($this->maxBoundary[$i], $item->getNthDimension($i));
                 $this->minBoundary[$i] = min($this->minBoundary[$i], $item->getNthDimension($i));
@@ -168,6 +172,9 @@ class KDTree implements KDTreeInterface
         }
     }
 
+    /**
+     *  Build kd tree
+     */
     private function buildTree()
     {
         if ($this->length > 0) {
