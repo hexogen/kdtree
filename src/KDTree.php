@@ -132,22 +132,18 @@ class KDTree implements KDTreeInterface
         $j = $hi + 1;
         $v = $this->items[$lo];
         $val = $v->getNthDimension($d);
-        while (true) {
-            while ($this->items[++$i]->getNthDimension($d) < $val) {
-                if ($i == $hi) {
-                    break;
-                }
+
+        do {
+            while ($this->items[++$i]->getNthDimension($d) < $val && $i != $hi) {
             }
 
             while ($this->items[--$j]->getNthDimension($d) > $val) {
             }
 
-            if ($i >= $j) {
-                break;
+            if ($i < $j) {
+                $this->exch($i, $j);
             }
-
-            $this->exch($i, $j);
-        }
+        } while ($i < $j);
 
         $this->exch($lo, $j);
 
