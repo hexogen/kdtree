@@ -10,7 +10,7 @@ class KDTree implements KDTreeInterface
     private $root;
 
     /**
-     * @var ItemInterface[]|null array of items or null after tree has been built
+     * @var ItemInterface[] array of items or null after tree has been built
      */
     private $items;
 
