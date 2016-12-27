@@ -206,7 +206,7 @@ class KDTreeTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    private function getRandomItemsList(int $num = 100, int $dimensions = 2, array $coordinatesSet = [])
+    protected function getRandomItemsList(int $num = 100, int $dimensions = 2, array $coordinatesSet = [])
     {
         $list = new ItemList($dimensions);
         for ($i = 0; $i < $num; $i++) {
