@@ -7,7 +7,7 @@
 [![Quality Score][ico-code-quality]][link-code-quality]
 [![Total Downloads][ico-downloads]][link-downloads]
 
-PHP KD Tree implementation.
+PHP KD Tree implementation. With availability to create custom search algorithms and tree storage engines.
 
 ## Install
 
