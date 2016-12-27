@@ -18,7 +18,7 @@ class NearestSearch extends SearchAbstract
     private $maxQueuedDistance;
 
     /**
-     * @var Point
+     * @var PointInterface
      */
     private $point;
 
