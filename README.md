@@ -7,10 +7,7 @@
 [![Quality Score][ico-code-quality]][link-code-quality]
 [![Total Downloads][ico-downloads]][link-downloads]
 
-**Note:** Replace ```Volodymyr Basarab``` ```hexogen``` ```https://github.com/hexogen``` ```volodymyrbas@gmail.com``` ```hexogen``` ```kdtree``` ```file system kdtree index``` with their correct values in [README.md](README.md), [CHANGELOG.md](CHANGELOG.md), [CONTRIBUTING.md](CONTRIBUTING.md), [LICENSE.md](LICENSE.md) and [composer.json](composer.json) files, then delete this line. You can run `$ php prefill.php` in the command line to make all replacements at once. Delete the file prefill.php as well.
-
-This is where your description should go. Try and limit it to a paragraph or two, and maybe throw in a mention of what
-PSRs you support to avoid any confusion with users and contributors.
+PHP KD Tree implementation.
 
 ## Install
 
@@ -23,8 +20,27 @@ $ composer require hexogen/kdtree
 ## Usage
 
 ``` php
-$skeleton = new Hexogen\KDTree();
-echo $skeleton->echoPhrase('Hello, League!');
+//Item container with 2 dimensional points
+$itemList = new ItemList(2);
+
+//Adding 2 - dimension items to the list
+$itemList->addItem(new Item(1, [1.2, 4.3]));
+$itemList->addItem(new Item(2, [1.3, 3.4]));
+$itemList->addItem(new Item(3, [4.5, 1.2]));
+$itemList->addItem(new Item(4, [5.2, 3.5]));
+$itemList->addItem(new Item(5, [2.1, 3.6]));
+
+//building tree with given item list
+$tree = new KDTree($itemList);
+
+//creating search engine with custom algorithm (currently Nearest Search)
+$searcher = new NearestSearch($tree);
+
+//retrieving a result ItemInterface[] array with given size (currently 2)
+$result = $searcher->search(new Point([1.25, 3.5]), 2);
+
+echo $result[0]->getId(); // 2
+echo $result[1]->getId(); // 1
 ```
 
 ## Change log
