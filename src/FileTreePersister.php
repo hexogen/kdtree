@@ -36,19 +36,15 @@ class FileTreePersister implements TreePersisterInterface
      */
     public function convert(KDTreeInterface $tree, string $identifier)
     {
-        $dataChunk = null;
-        $this->handler = fopen($this->path . '/' . $identifier, 'wb');
+        $this->initTree($identifier);
 
         $this->dimensions = $tree->getDimensionCount();
 
-        $this->nodeMemorySize = $this->dimensions * 8 + 3 * 4;
+        $this->calculateNodeSize();
 
-        $dataChunk = pack('V', $this->dimensions);
-        fwrite($this->handler, $dataChunk);
+        $this->specifyNumberOfDimensions();
 
-        $itemCount = $tree->getItemCount();
-        $dataChunk = pack('V', $itemCount);
-        fwrite($this->handler, $dataChunk);
+        $this->specifyNumberOfItems($tree);
 
         $upperBound = $tree->getMaxBoundary();
         $this->writeCoordinate($upperBound);
@@ -66,12 +62,9 @@ class FileTreePersister implements TreePersisterInterface
     private function writeNode(NodeInterface $node)
     {
         $position = ftell($this->handler);
-        $coordinate = [];
         $item = $node->getItem();
 
-        $itemId = $item->getId();
-        $dataChunk = pack('V', $itemId);
-        fwrite($this->handler, $dataChunk);
+        $this->writeItemId($item);
 
         $dataChunk = pack('V', 0); // left position currently unknown so it equal 0/null
         fwrite($this->handler, $dataChunk);
@@ -85,11 +78,7 @@ class FileTreePersister implements TreePersisterInterface
         $dataChunk = pack('V', $rightPosition);
         fwrite($this->handler, $dataChunk);
 
-
-        for ($i = 0; $i < $this->dimensions; $i++) {
-            $coordinate[] = $item->getNthDimension($i);
-        }
-        $this->writeCoordinate($coordinate);
+        $this->saveItemCoordinate($item);
 
         if ($rightNode) {
             $this->writeNode($rightNode);
@@ -100,12 +89,7 @@ class FileTreePersister implements TreePersisterInterface
         if ($leftNode == null) {
             return;
         }
-        $leftPosition = ftell($this->handler);
-        fseek($this->handler, $position + 4);
-        $dataChunk = pack('V', $leftPosition);
-        fwrite($this->handler, $dataChunk);
-
-        fseek($this->handler, $leftPosition);
+        $this->persistLeftLink($position);
         $this->writeNode($leftNode);
     }
 
@@ -115,6 +99,76 @@ class FileTreePersister implements TreePersisterInterface
     private function writeCoordinate(array $coordinate)
     {
         $dataChunk = pack('d'.$this->dimensions, ...$coordinate);
+        fwrite($this->handler, $dataChunk);
+    }
+
+    /**
+     * @param string $identifier
+     */
+    private function initTree(string $identifier)
+    {
+        $this->handler = fopen($this->path . '/' . $identifier, 'wb');
+    }
+
+    /**
+     * Calculate memory size in file needed for single node
+     */
+    private function calculateNodeSize()
+    {
+        $this->nodeMemorySize = $this->dimensions * 8 + 3 * 4;
+    }
+
+    /**
+     * Specify number of dimensions according to file format
+     */
+    private function specifyNumberOfDimensions()
+    {
+        $dataChunk = pack('V', $this->dimensions);
+        fwrite($this->handler, $dataChunk);
+    }
+
+    /**
+     * @param KDTreeInterface $tree
+     */
+    private function specifyNumberOfItems(KDTreeInterface $tree)
+    {
+        $itemCount = $tree->getItemCount();
+        $dataChunk = pack('V', $itemCount);
+        fwrite($this->handler, $dataChunk);
+    }
+
+    /**
+     * @param $item
+     */
+    private function saveItemCoordinate(ItemInterface $item)
+    {
+        $coordinate = [];
+        for ($i = 0; $i < $this->dimensions; $i++) {
+            $coordinate[] = $item->getNthDimension($i);
+        }
+        $this->writeCoordinate($coordinate);
+    }
+
+    /**
+     * Persist current position before writing left node
+     * @param $position
+     */
+    private function persistLeftLink($position)
+    {
+        $leftPosition = ftell($this->handler);
+        fseek($this->handler, $position + 4);
+        $dataChunk = pack('V', $leftPosition);
+        fwrite($this->handler, $dataChunk);
+        fseek($this->handler, $leftPosition);
+    }
+
+    /**
+     * @param $item
+     */
+    private function writeItemId(ItemInterface $item)
+    {
+        $itemId = $item->getId();
+        $dataChunk = pack('V', $itemId);
         fwrite($this->handler, $dataChunk);
     }
 }
