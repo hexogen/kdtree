@@ -16,6 +16,6 @@ class FileTreePersisterTest extends TreeTestCase
         $saver = new FileTreePersister(__DIR__ . '/storage');
         $saver->convert($tree, 'tree1.bin');
 
-        $this->assertFileExists(__DIR__ . '/storage/tree1.bin');
+        $this->assertTrue(file_exists(__DIR__ . '/storage/tree1.bin'));
     }
 }
