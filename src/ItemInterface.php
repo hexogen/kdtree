@@ -7,7 +7,7 @@ interface ItemInterface extends PointInterface
     /**
      * get item id
      *
-     * @return mixed item id
+     * @return int item id
      */
-    public function getId();
+    public function getId() : int;
 }

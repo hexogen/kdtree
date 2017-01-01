@@ -161,7 +161,8 @@ class NearestSearchTest extends \PHPUnit_Framework_TestCase
     /**
      * Circle data provider
      */
-    public function pointsProvider() {
+    public function pointsProvider()
+    {
         return [
             ['circle4.txt'],
             ['circle10.txt'],

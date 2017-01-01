@@ -9,10 +9,10 @@ class Item extends Point implements ItemInterface
 
     /**
      * Item constructor.
-     * @param $id
+     * @param int $id
      * @param array $dValues
      */
-    public function __construct($id, array $dValues)
+    public function __construct(int $id, array $dValues)
     {
         parent::__construct($dValues);
         $this->id = $id;
@@ -21,9 +21,9 @@ class Item extends Point implements ItemInterface
     /**
      * get item id
      *
-     * @return mixed item id
+     * @return int item id
      */
-    public function getId()
+    public function getId() : int
     {
         return $this->id;
     }
