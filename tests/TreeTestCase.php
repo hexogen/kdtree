@@ -2,7 +2,6 @@
 
 namespace Hexogen\KDTree\Tests;
 
-
 use Hexogen\KDTree\Interfaces\KDTreeInterface;
 use Hexogen\KDTree\Interfaces\NodeInterface;
 use Hexogen\KDTree\Item;
