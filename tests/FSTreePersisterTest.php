@@ -12,7 +12,7 @@ class FileTreePersisterTest extends TreeTestCase
      */
     public function itShouldSaveTreeToTheFile()
     {
-        $tree = new KDTree($this->getRandomItemsList(0, 10));
+        $tree = new KDTree($this->getRandomItemsList(100, 10));
         $saver = new FSTreePersister(__DIR__ . '/storage');
         $saver->convert($tree, 'tree1.bin');
 
