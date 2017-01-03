@@ -47,31 +47,52 @@ class KDTree implements KDTreeInterface
         unset($this->items);
     }
 
+    /**
+     * @return int
+     */
     public function getItemCount(): int
     {
         return $this->length;
     }
 
-    public function getRoot(): NodeInterface
+    /**
+     * @return NodeInterface|null return node or null if there is no nodes in the tree
+     */
+    public function getRoot()
     {
         return $this->root;
     }
 
+    /**
+     * @return array
+     */
     public function getMinBoundary(): array
     {
         return $this->minBoundary;
     }
 
+    /**
+     * @return array
+     */
     public function getMaxBoundary(): array
     {
         return $this->maxBoundary;
     }
 
+    /**
+     * @return int
+     */
     public function getDimensionCount(): int
     {
         return $this->dimensions;
     }
 
+    /**
+     * @param int $lo
+     * @param int $hi
+     * @param int $d
+     * @return Node
+     */
     private function buildSubTree(int $lo, int $hi, int $d): Node
     {
         $mid = (int)(($hi - $lo) / 2) + $lo;

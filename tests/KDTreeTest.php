@@ -23,6 +23,30 @@ class KDTreeTest extends TreeTestCase
 
     /**
      * @test
+     */
+    public function itShouldGetRoot()
+    {
+        $itemList = new ItemList(2);
+        $item = new Item(1, [2, 3]);
+        $itemList->addItem($item);
+        $tree = new KDTree($itemList);
+
+        $this->assertSame($item, $tree->getRoot()->getItem());
+    }
+
+    /**
+     * @test
+     */
+    public function itShouldGetNullRoot()
+    {
+        $itemList = new ItemList(5);
+        $tree = new KDTree($itemList);
+
+        $this->assertNull($tree->getRoot());
+    }
+
+    /**
+     * @test
      * @dataProvider itemProvider
      * @param ItemList $itemList
      */
@@ -149,60 +173,5 @@ class KDTreeTest extends TreeTestCase
         }
 
         return $lists;
-    }
-
-    private function checkTree(KDTree $tree)
-    {
-        $root = $tree->getRoot();
-        $this->checkNode($root, 0);
-    }
-
-    private function checkLeftBranch(NodeInterface $node, float $value, int $d)
-    {
-        $val = $node->getItem()->getNthDimension($d);
-
-        $this->assertLessThanOrEqual($value, $val);
-
-        $left = $node->getLeft();
-        if ($left) {
-            $this->checkLeftBranch($left, $value, $d);
-        }
-        $right = $node->getRight();
-        if ($left) {
-            $this->checkLeftBranch($right, $value, $d);
-        }
-    }
-
-    private function checkRightBranch(NodeInterface $node, float $value, int $d)
-    {
-        $val = $node->getItem()->getNthDimension($d);
-
-        $this->assertGreaterThanOrEqual($value, $val);
-
-        $left = $node->getLeft();
-        if ($left) {
-            $this->checkRightBranch($left, $value, $d);
-        }
-        $right = $node->getRight();
-        if ($left) {
-            $this->checkRightBranch($right, $value, $d);
-        }
-    }
-
-    public function checkNode(NodeInterface $node, int $d)
-    {
-        $value = $node->getItem()->getNthDimension($d);
-        $nextD = ($d + 1) % $node->getItem()->getDimensionsCount();
-        $left = $node->getLeft();
-        if ($left) {
-            $this->checkLeftBranch($left, $value, $d);
-            $this->checkNode($left, $nextD);
-        }
-
-        $right = $node->getRight();
-        if ($left) {
-            $this->checkRightBranch($right, $value, $d);
-            $this->checkNode($right, $nextD);
-        }
     }
 }

@@ -15,9 +15,9 @@ interface KDTreeInterface
     public function getDimensionCount() : int;
 
     /**
-     * @return NodeInterface root node of the tree
+     * @return NodeInterface|null root node of the tree
      */
-    public function getRoot() : NodeInterface;
+    public function getRoot();
 
     /**
      * @return array lower corner coordinate of the virtual multidimensional

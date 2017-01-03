@@ -2,7 +2,7 @@
 
 namespace Hexogen\KDTree;
 
-class FileTreePersister implements TreePersisterInterface
+class FSTreePersister implements TreePersisterInterface
 {
     /**
      * @var string path to the file
@@ -52,7 +52,10 @@ class FileTreePersister implements TreePersisterInterface
         $lowerBound = $tree->getMinBoundary();
         $this->writeCoordinate($lowerBound);
 
-        $this->writeNode($tree->getRoot());
+        $root  = $tree->getRoot();
+        if ($root) {
+            $this->writeNode($root);
+        }
         fclose($this->handler);
     }
 
