@@ -41,6 +41,26 @@ $result = $searcher->search(new Point([1.25, 3.5]), 2);
 
 echo $result[0]->getId(); // 2
 echo $result[1]->getId(); // 1
+
+//You also may save tree to a binary file
+//and use file system version of the tree
+$persister = new FSTreePersister('/path/to/dir');
+$persister->convert($tree, 'treeName.bin');
+
+
+$itemFactory = new ItemFactory();
+//Then init new instance of fyle system version of the tree
+$fsTree = new FSKDTree('/path/to/dir/treeName.bin', $$itemFactory);
+
+//Now use fs kdtree to search
+$fsSearcher = new NearestSearch($fsTree);
+
+//retrieving a result ItemInterface[] array with given size (currently 2)
+$result = $fsSearcher->search(new Point([1.25, 3.5]), 2);
+
+echo $result[0]->getId(); // 2
+echo $result[1]->getId(); // 1
+
 ```
 
 ## Change log
