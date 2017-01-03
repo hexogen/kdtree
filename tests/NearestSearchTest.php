@@ -131,6 +131,22 @@ class NearestSearchTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function itShouldReturnEmptyArrayIfTreeIsEmpty()
+    {
+        $itemList = new ItemList(2);
+        $tree = new KDTree($itemList);
+
+        $searcher = new NearestSearch($tree);
+
+        $point = new Point([0.3, 0.3]);
+        $result = $searcher->search($point, 1);
+
+        $this->assertCount(0, $result);
+    }
+
+    /**
+     * @test
+     */
     public function resultShouldNotBeLongerThanTree()
     {
         $itemList = new ItemList(2);

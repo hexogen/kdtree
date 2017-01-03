@@ -37,6 +37,10 @@ class NearestSearch extends SearchAbstract
         $upperBound = $this->tree->getMaxBoundary();
         $lowerBound = $this->tree->getMinBoundary();
         $root = $this->tree->getRoot();
+
+        if ($root == null) {
+            return [];
+        }
         
         /**
          * @var array orthogonal square distances to the point
