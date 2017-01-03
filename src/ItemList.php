@@ -4,6 +4,7 @@
 namespace Hexogen\KDTree;
 
 use Hexogen\KDTree\Exception\ValidationException;
+use Hexogen\KDTree\Interfaces\ItemInterface;
 
 class ItemList
 {

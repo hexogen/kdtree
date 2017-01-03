@@ -3,8 +3,8 @@
 namespace Hexogen\KDTree\Tests;
 
 use Hexogen\KDTree\FSNode;
+use Hexogen\KDTree\Interfaces\ItemInterface;
 use Hexogen\KDTree\ItemFactory;
-use Hexogen\KDTree\ItemInterface;
 use \Mockery as m;
 
 class FSNodeTest extends TreeTestCase

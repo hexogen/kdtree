@@ -2,6 +2,10 @@
 
 namespace Hexogen\KDTree;
 
+use Hexogen\KDTree\Interfaces\ItemFactoryInterface;
+use Hexogen\KDTree\Interfaces\KDTreeInterface;
+use Hexogen\KDTree\Interfaces\NodeInterface;
+
 class FSKDTree implements KDTreeInterface
 {
     /**

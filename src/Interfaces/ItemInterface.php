@@ -1,6 +1,6 @@
 <?php
 
-namespace Hexogen\KDTree;
+namespace Hexogen\KDTree\Interfaces;
 
 interface ItemInterface extends PointInterface
 {

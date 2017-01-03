@@ -3,6 +3,10 @@
 namespace Hexogen\KDTree;
 
 use Hexogen\KDTree\Exception\ValidationException;
+use Hexogen\KDTree\Interfaces\ItemInterface;
+use Hexogen\KDTree\Interfaces\NodeInterface;
+use Hexogen\KDTree\Interfaces\PointInterface;
+use Hexogen\KDTree\Interfaces\SearchAbstract;
 use SplPriorityQueue;
 
 class NearestSearch extends SearchAbstract

@@ -3,6 +3,8 @@
 
 namespace Hexogen\KDTree;
 
+use Hexogen\KDTree\Interfaces\ItemInterface;
+
 class Item extends Point implements ItemInterface
 {
     private $id;

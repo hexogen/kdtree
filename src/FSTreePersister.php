@@ -2,6 +2,11 @@
 
 namespace Hexogen\KDTree;
 
+use Hexogen\KDTree\Interfaces\ItemInterface;
+use Hexogen\KDTree\Interfaces\KDTreeInterface;
+use Hexogen\KDTree\Interfaces\NodeInterface;
+use Hexogen\KDTree\Interfaces\TreePersisterInterface;
+
 class FSTreePersister implements TreePersisterInterface
 {
     /**

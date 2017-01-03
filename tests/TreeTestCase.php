@@ -2,11 +2,11 @@
 
 namespace Hexogen\KDTree\Tests;
 
+
+use Hexogen\KDTree\Interfaces\KDTreeInterface;
+use Hexogen\KDTree\Interfaces\NodeInterface;
 use Hexogen\KDTree\Item;
 use Hexogen\KDTree\ItemList;
-use Hexogen\KDTree\KDTree;
-use Hexogen\KDTree\KDTreeInterface;
-use Hexogen\KDTree\NodeInterface;
 
 abstract class TreeTestCase extends \PHPUnit_Framework_TestCase
 {

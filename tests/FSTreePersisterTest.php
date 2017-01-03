@@ -5,7 +5,7 @@ namespace Hexogen\KDTree\Tests;
 use Hexogen\KDTree\FSTreePersister;
 use Hexogen\KDTree\KDTree;
 
-class FileTreePersisterTest extends TreeTestCase
+class FSTreePersisterTest extends TreeTestCase
 {
     /**
      * @test

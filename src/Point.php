@@ -3,6 +3,7 @@
 namespace Hexogen\KDTree;
 
 use Hexogen\KDTree\Exception\ValidationException;
+use Hexogen\KDTree\Interfaces\PointInterface;
 
 class Point implements PointInterface
 {

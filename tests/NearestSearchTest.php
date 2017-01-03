@@ -2,8 +2,8 @@
 
 namespace Hexogen\KDTree\Tests;
 
+use Hexogen\KDTree\Interfaces\ItemInterface;
 use Hexogen\KDTree\Item;
-use Hexogen\KDTree\ItemInterface;
 use Hexogen\KDTree\ItemList;
 use Hexogen\KDTree\KDTree;
 use Hexogen\KDTree\NearestSearch;

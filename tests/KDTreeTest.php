@@ -5,7 +5,6 @@ namespace Hexogen\KDTree\Tests;
 use Hexogen\KDTree\Item;
 use Hexogen\KDTree\ItemList;
 use Hexogen\KDTree\KDTree;
-use Hexogen\KDTree\NodeInterface;
 use \Mockery as m;
 
 class KDTreeTest extends TreeTestCase

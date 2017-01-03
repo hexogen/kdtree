@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Hexogen\KDTree;
+namespace Hexogen\KDTree\Interfaces;
 
 interface ItemFactoryInterface
 {
