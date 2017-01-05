@@ -41,7 +41,12 @@ $searcher = new NearestSearch($tree);
 $result = $searcher->search(new Point([1.25, 3.5]), 2);
 
 echo $result[0]->getId(); // 2
+echo $result[0]->getNthDimension(0); // 1.3
+echo $result[0]->getNthDimension(1); // 3.4
+
 echo $result[1]->getId(); // 1
+echo $result[1]->getNthDimension(0); // 1.2
+echo $result[1]->getNthDimension(1); // 4.3
 
 ```
 
