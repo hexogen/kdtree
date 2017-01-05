@@ -60,7 +60,7 @@ $persister->convert($tree, 'treeName.bin');
 // file system version of the tree
 $itemFactory = new ItemFactory();
 //Then init new instance of fyle system version of the tree
-$fsTree = new FSKDTree('/path/to/dir/treeName.bin', $$itemFactory);
+$fsTree = new FSKDTree('/path/to/dir/treeName.bin', $itemFactory);
 
 //Now use fs kdtree to search
 $fsSearcher = new NearestSearch($fsTree);
