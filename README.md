@@ -60,7 +60,9 @@ echo $result[1]->getNthDimension(1); // 4.3
 ### Persist tree to a binary file
 
 ``` php
+//Init tree writer
 $persister = new FSTreePersister('/path/to/dir');
+
 //Save the tree to /path/to/dir/treeName.bin
 $persister->convert($tree, 'treeName.bin');
 
