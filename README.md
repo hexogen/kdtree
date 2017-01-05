@@ -57,7 +57,7 @@ $persister->convert($tree, 'treeName.bin');
 ### File system version of the tree usage
 
 ``` php
-// itemInterface factory
+// ItemInterface factory
 $itemFactory = new ItemFactory();
 
 //Then init new instance of fyle system version of the tree
