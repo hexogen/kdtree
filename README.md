@@ -8,6 +8,8 @@
 [![Total Downloads][ico-downloads]][link-downloads]
 
 PHP KD Tree implementation. With availability to create custom search algorithms and tree storage engines.
+To receive all benefits from KD Tree, use file system implementation(FSKDTree). It works fast because there
+is no need to build the tree in every script run.
 
 ## Install
 
@@ -58,9 +60,8 @@ echo $result[1]->getNthDimension(1); // 4.3
 ### Persist tree to a binary file
 
 ``` php
-//You also may save tree to a binary file
 $persister = new FSTreePersister('/path/to/dir');
-$persister->convert($tree, 'treeName.bin');
+$persister->convert($tree, 'treeName.bin'); // saves tree to /path/to/dir/treeName.bin
 
 ```
 
