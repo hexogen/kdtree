@@ -33,7 +33,7 @@ $itemList->addItem(new Item(3, [4.5, 1.2]));
 $itemList->addItem(new Item(4, [5.2, 3.5]));
 $itemList->addItem(new Item(5, [2.1, 3.6]));
 
-//building tree with given item list
+//Building tree with given item list
 $tree = new KDTree($itemList);
 
 ```
@@ -41,10 +41,10 @@ $tree = new KDTree($itemList);
 ### Searching nearest items to the given point
 
 ``` php
-//creating search engine with custom algorithm (currently Nearest Search)
+//Creating search engine with custom algorithm (currently Nearest Search)
 $searcher = new NearestSearch($tree);
 
-//retrieving a result ItemInterface[] array with given size (currently 2)
+//Retrieving a result ItemInterface[] array with given size (currently 2)
 $result = $searcher->search(new Point([1.25, 3.5]), 2);
 
 echo $result[0]->getId(); // 2
@@ -80,7 +80,7 @@ $fsTree = new FSKDTree('/path/to/dir/treeName.bin', $itemFactory);
 //Now use fs kdtree to search
 $fsSearcher = new NearestSearch($fsTree);
 
-//retrieving a result ItemInterface[] array with given size (currently 2)
+//Retrieving a result ItemInterface[] array with given size (currently 2)
 $result = $fsSearcher->search(new Point([1.25, 3.5]), 2);
 
 echo $result[0]->getId(); // 2
