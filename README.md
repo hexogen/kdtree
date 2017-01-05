@@ -57,8 +57,9 @@ $persister->convert($tree, 'treeName.bin');
 ### File system version of the tree usage
 
 ``` php
-// file system version of the tree
+// itemInterface factory
 $itemFactory = new ItemFactory();
+
 //Then init new instance of fyle system version of the tree
 $fsTree = new FSKDTree('/path/to/dir/treeName.bin', $itemFactory);
 
