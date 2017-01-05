@@ -34,6 +34,11 @@ $itemList->addItem(new Item(5, [2.1, 3.6]));
 //building tree with given item list
 $tree = new KDTree($itemList);
 
+```
+
+### Searching nearest items to the given point
+
+``` php
 //creating search engine with custom algorithm (currently Nearest Search)
 $searcher = new NearestSearch($tree);
 
