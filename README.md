@@ -19,6 +19,7 @@ $ composer require hexogen/kdtree
 
 ## Usage
 
+### Tree creation
 ``` php
 //Item container with 2 dimensional points
 $itemList = new ItemList(2);
@@ -42,12 +43,24 @@ $result = $searcher->search(new Point([1.25, 3.5]), 2);
 echo $result[0]->getId(); // 2
 echo $result[1]->getId(); // 1
 
+```
+
+### Persist tree to a binary file
+
+``` php
+
 //You also may save tree to a binary file
-//and use file system version of the tree
 $persister = new FSTreePersister('/path/to/dir');
 $persister->convert($tree, 'treeName.bin');
 
+```
 
+### File system version of the tree usage
+
+``` php
+
+
+// file system version of the tree
 $itemFactory = new ItemFactory();
 //Then init new instance of fyle system version of the tree
 $fsTree = new FSKDTree('/path/to/dir/treeName.bin', $$itemFactory);

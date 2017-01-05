@@ -3,6 +3,7 @@
 namespace Hexogen\KDTree;
 
 use Hexogen\KDTree\Interfaces\ItemInterface;
+use Hexogen\KDTree\Interfaces\ItemListInterface;
 use Hexogen\KDTree\Interfaces\KDTreeInterface;
 use Hexogen\KDTree\Interfaces\NodeInterface;
 
@@ -38,7 +39,11 @@ class KDTree implements KDTreeInterface
      */
     private $dimensions;
 
-    public function __construct(ItemList $itemList)
+    /**
+     * KDTree constructor.
+     * @param ItemListInterface $itemList
+     */
+    public function __construct(ItemListInterface $itemList)
     {
         $this->dimensions = $itemList->getDimensionCount();
         $this->items = $itemList->getItems();
@@ -52,6 +57,7 @@ class KDTree implements KDTreeInterface
     }
 
     /**
+     * Get number of items in the tree
      * @return int
      */
     public function getItemCount(): int
@@ -60,6 +66,7 @@ class KDTree implements KDTreeInterface
     }
 
     /**
+     * Get root node
      * @return NodeInterface|null return node or null if there is no nodes in the tree
      */
     public function getRoot()
@@ -68,6 +75,7 @@ class KDTree implements KDTreeInterface
     }
 
     /**
+     * Get lower boundary coordinate
      * @return array
      */
     public function getMinBoundary(): array
@@ -76,6 +84,7 @@ class KDTree implements KDTreeInterface
     }
 
     /**
+     * Get upper boundary coordinate
      * @return array
      */
     public function getMaxBoundary(): array
@@ -84,6 +93,7 @@ class KDTree implements KDTreeInterface
     }
 
     /**
+     * Get number of dimensions in the tree
      * @return int
      */
     public function getDimensionCount(): int

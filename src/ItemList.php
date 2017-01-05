@@ -5,13 +5,14 @@ namespace Hexogen\KDTree;
 
 use Hexogen\KDTree\Exception\ValidationException;
 use Hexogen\KDTree\Interfaces\ItemInterface;
+use Hexogen\KDTree\Interfaces\ItemListInterface;
 
-class ItemList
+class ItemList implements ItemListInterface
 {
     private $dimensions;
     private $items;
     private $ids;
-    private $lastId;
+    private $lastPosition;
 
     /**
      * ItemList constructor.
@@ -24,7 +25,7 @@ class ItemList
             throw new ValidationException('$dimensions should be bigger than 0');
         }
 
-        $this->lastId = 0;
+        $this->lastPosition = 0;
         $this->dimensions = $dimensions;
         $this->items = [];
         $this->ids = [];
@@ -45,11 +46,12 @@ class ItemList
             $this->items[$index] = $item;
         } else {
             $this->items[] = $item;
-            $this->ids[$id] = $this->lastId++;
+            $this->ids[$id] = $this->lastPosition++;
         }
     }
 
     /**
+     * Get all items in the list
      * @return ItemInterface[]
      */
     public function getItems(): array
