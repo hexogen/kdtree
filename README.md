@@ -8,8 +8,8 @@
 [![Total Downloads][ico-downloads]][link-downloads]
 
 PHP KD Tree implementation. With availability to create custom search algorithms and tree storage engines.
-To receive all benefits from KD Tree, use file system implementation(FSKDTree). It works fast because there
-is no need to build a tree in every script run.
+To receive all benefits from KD Tree, use file system implementation(FSKDTree). It has better performance,
+because there is no need to build a tree in every script run.
 
 ## Install
 
@@ -68,7 +68,7 @@ $persister->convert($tree, 'treeName.bin');
 
 ```
 
-### File system version of the tree usage
+### File system version of the tree
 
 ``` php
 //ItemInterface factory
