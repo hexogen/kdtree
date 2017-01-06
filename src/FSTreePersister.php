@@ -160,12 +160,12 @@ class FSTreePersister implements TreePersisterInterface
 
     /**
      * Persist current position before writing left node
-     * @param $position
+     * @param int $position
      */
-    private function persistLeftLink($position)
+    private function persistLeftLink(int $position)
     {
         $leftPosition = ftell($this->handler);
-        fseek($this->handler, $position + 4);
+        fseek($this->handler, $position + FSKDTree::INT_LENGTH);
         $dataChunk = pack('V', $leftPosition);
         fwrite($this->handler, $dataChunk);
         fseek($this->handler, $leftPosition);
