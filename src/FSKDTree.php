@@ -9,12 +9,12 @@ use Hexogen\KDTree\Interfaces\NodeInterface;
 class FSKDTree implements KDTreeInterface
 {
     /**
-     * integer size in bytes
+     * @const int integer size in bytes
      */
     const INT_LENGTH = 4;
 
     /**
-     * float size in bytes
+     * @const int float size in bytes
      */
     const FLOAT_LENGTH = 8;
 
