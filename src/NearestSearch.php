@@ -29,6 +29,7 @@ class NearestSearch extends SearchAbstract
     /**
      * Search items it the tree by given algorithm
      *
+     * @api
      * @param PointInterface $point
      * @param int $resultLength
      * @return ItemInterface[]

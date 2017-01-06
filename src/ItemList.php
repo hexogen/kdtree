@@ -34,6 +34,7 @@ class ItemList implements ItemListInterface
     /**
      * Add or replace an item in the item list
      *
+     * @api
      * @param ItemInterface $item
      */
     public function addItem(ItemInterface $item)

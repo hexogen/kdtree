@@ -137,15 +137,15 @@ class FSNode implements NodeInterface
     private function readNode()
     {
         fseek($this->handler, $this->position);
-        $dataLength = 8 * $this->dimensions;
+        $dataLength = FSKDTree::FLOAT_LENGTH * $this->dimensions;
 
-        $binData = fread($this->handler, 4);
+        $binData = fread($this->handler, FSKDTree::INT_LENGTH);
         $itemId = unpack('V', $binData)[1];
 
-        $binData = fread($this->handler, 4);
+        $binData = fread($this->handler, FSKDTree::INT_LENGTH);
         $this->leftPosition = unpack('V', $binData)[1];
 
-        $binData = fread($this->handler, 4);
+        $binData = fread($this->handler, FSKDTree::INT_LENGTH);
         $this->rightPosition = unpack('V', $binData)[1];
 
         $binData = fread($this->handler, $dataLength);

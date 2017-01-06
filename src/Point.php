@@ -25,6 +25,7 @@ class Point implements PointInterface
     /**
      * get nth dimension value from vector
      *
+     * @api
      * @param int $d
      * @return float
      */
@@ -57,7 +58,8 @@ class Point implements PointInterface
     }
 
     /**
-     * @return int number of dimensions in array
+     * @api
+     * @return int number of dimensions in the point
      */
     public function getDimensionsCount(): int
     {

@@ -9,6 +9,16 @@ use Hexogen\KDTree\Interfaces\NodeInterface;
 class FSKDTree implements KDTreeInterface
 {
     /**
+     * integer size in bytes
+     */
+    const INT_LENGTH = 4;
+
+    /**
+     * float size in bytes
+     */
+    const FLOAT_LENGTH = 8;
+
+    /**
      * @var NodeInterface
      */
     private $root;
@@ -120,7 +130,7 @@ class FSKDTree implements KDTreeInterface
      */
     private function readDimensionsCount()
     {
-        $binData = fread($this->handler, 4);
+        $binData = fread($this->handler, FSKDTree::INT_LENGTH);
         $this->dimensions = unpack('V', $binData)[1];
     }
 
@@ -129,7 +139,7 @@ class FSKDTree implements KDTreeInterface
      */
     private function readItemsCount()
     {
-        $binData = fread($this->handler, 4);
+        $binData = fread($this->handler, FSKDTree::INT_LENGTH);
         $this->length = unpack('V', $binData)[1];
     }
 
@@ -167,7 +177,7 @@ class FSKDTree implements KDTreeInterface
      */
     private function readPoint()
     {
-        $dataLength = 8 * $this->dimensions;
+        $dataLength = FSKDTree::FLOAT_LENGTH * $this->dimensions;
         $binData = fread($this->handler, $dataLength);
         $dValues = unpack('d' . $this->dimensions, $binData);
         return array_values($dValues);

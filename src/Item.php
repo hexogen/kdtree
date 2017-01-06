@@ -23,6 +23,7 @@ class Item extends Point implements ItemInterface
     /**
      * get item id
      *
+     * @api
      * @return int item id
      */
     public function getId() : int

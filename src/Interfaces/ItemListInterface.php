@@ -6,6 +6,7 @@ interface ItemListInterface
 {
     /**
      * Add item to the list
+     * @api
      * @param ItemInterface $item
      */
     public function addItem(ItemInterface $item);

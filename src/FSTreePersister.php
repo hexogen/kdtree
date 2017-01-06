@@ -35,6 +35,7 @@ class FSTreePersister implements TreePersisterInterface
     }
 
     /**
+     * @api
      * @param KDTreeInterface $tree
      * @param string $identifier that identifies persisted tree(may be a filename, database name etc.)
      * @return mixed
@@ -123,7 +124,7 @@ class FSTreePersister implements TreePersisterInterface
      */
     private function calculateNodeSize()
     {
-        $this->nodeMemorySize = $this->dimensions * 8 + 3 * 4;
+        $this->nodeMemorySize = 3 * FSKDTree::INT_LENGTH + $this->dimensions * FSKDTree::FLOAT_LENGTH;
     }
 
     /**

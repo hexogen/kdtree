@@ -4,6 +4,9 @@ namespace Hexogen\KDTree\Interfaces;
 
 interface NodeInterface
 {
+    /**
+     * @return ItemInterface
+     */
     public function getItem() : ItemInterface;
 
     /**
@@ -17,13 +20,11 @@ interface NodeInterface
     public function setLeft(NodeInterface $node);
 
     /**
-     * @api
      * @return NodeInterface|null
      */
     public function getRight();
 
     /**
-     * @api
      * @return NodeInterface|null
      */
     public function getLeft();
