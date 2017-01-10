@@ -7,9 +7,12 @@
 [![Quality Score][ico-code-quality]][link-code-quality]
 [![Total Downloads][ico-downloads]][link-downloads]
 
-PHP KD Tree implementation. With availability to create custom search algorithms and tree storage engines.
-To receive all benefits from KD Tree, use file system implementation(FSKDTree). It has much better performance,
-because there is no need to build a tree in every script run.
+PHP KD Tree implementation.
+
+To receive all benefits from KD Tree, use file system implementation(FSKDTree) as a cache. It has much better performance,
+because there is no need to build a tree in every script run. Tree stores in binary format and uses lazy loading
+while traversing through nodes. Current approach provides much higher speed compare to deserialization. Its recommended
+to use SSD storage. On a cold run(when OS is not storing file in RAM) SSD provides ~10X speed boost compare to HDD.
 
 ## Install
 
