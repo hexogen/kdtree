@@ -9,10 +9,10 @@
 
 PHP KD Tree implementation.
 
-To receive all benefits from KD Tree, use file system implementation(FSKDTree) as a cache. It has much better performance,
-because there is no need to build a tree in every script run. Tree stores in binary format and uses lazy loading
-while traversing through nodes. Current approach provides much higher speed compare to deserialization. Its recommended
-to use SSD storage. On a cold run(when OS is not storing file in RAM) SSD gives ~10X speed boost compare to HDD.
+To receive all benefits from KD Tree, use file system implementation(FSKDTree) as a cache. FSKDTree stores in binary
+format and uses lazy loading while traversing through nodes. Current approach provides much higher performance compare
+to deserialization. Its recommended to use SSD storage. On a cold run(when OS is not storing file in RAM) SSD gives
+~10X speed boost compare to HDD.
 
 ## Install
 
