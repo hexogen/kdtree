@@ -1,4 +1,4 @@
-# kdtree
+# K-D Tree
 
 [![Latest Version on Packagist][ico-version]][link-packagist]
 [![Software License][ico-license]](LICENSE.md)
@@ -7,7 +7,7 @@
 [![Quality Score][ico-code-quality]][link-code-quality]
 [![Total Downloads][ico-downloads]][link-downloads]
 
-PHP KD Tree implementation.
+PHP K-D Tree implementation.
 
 To receive all benefits from KD Tree, use file system implementation(FSKDTree) as a cache. FSKDTree stores in binary
 format and uses lazy loading while traversing through nodes. Current approach provides much higher performance compare
