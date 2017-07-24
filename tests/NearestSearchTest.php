@@ -11,8 +11,9 @@ use Hexogen\KDTree\Node;
 use Hexogen\KDTree\Point;
 use League\Csv\Reader;
 use \Mockery as m;
+use PHPUnit\Framework\TestCase;
 
-class NearestSearchTest extends \PHPUnit_Framework_TestCase
+class NearestSearchTest extends TestCase
 {
     /**
      * @var ItemInterface[]

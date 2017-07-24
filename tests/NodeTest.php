@@ -5,8 +5,9 @@ namespace Hexogen\KDTree\Tests;
 use Hexogen\KDTree\Item;
 use Hexogen\KDTree\Node;
 use \Mockery as m;
+use PHPUnit\Framework\TestCase;
 
-class NodeTest extends \PHPUnit_Framework_TestCase
+class NodeTest extends TestCase
 {
     /**
      * @var Node

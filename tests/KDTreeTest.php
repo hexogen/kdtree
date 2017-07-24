@@ -145,7 +145,7 @@ class KDTreeTest extends TreeTestCase
         $params = [];
         $list = new ItemList(5);
         for ($i = 0; $i < 100; $i++) {
-            $item = new Item($id, [0, 0, 0, 0, 0]);
+            $item = new Item($i, [0, 0, 0, 0, 0]);
             $list->addItem($item);
         }
         $params[] = $list;

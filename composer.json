@@ -22,7 +22,7 @@
     "require-dev": {
         "league/csv": "^8.0",
         "mockery/mockery": "dev-master",
-        "phpunit/phpunit": "^5.0",
+        "phpunit/phpunit": "^6.0",
         "squizlabs/php_codesniffer": "^2.3"
     },
     "autoload": {

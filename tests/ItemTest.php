@@ -4,8 +4,9 @@ namespace Hexogen\KDTree\Tests;
 
 use Hexogen\KDTree\Exception\ValidationException;
 use Hexogen\KDTree\Item;
+use PHPUnit\Framework\TestCase;
 
-class ItemTest extends \PHPUnit_Framework_TestCase
+class ItemTest extends TestCase
 {
     /**
      * @var Item::class;

@@ -6,8 +6,9 @@ use Hexogen\KDTree\Interfaces\KDTreeInterface;
 use Hexogen\KDTree\Interfaces\NodeInterface;
 use Hexogen\KDTree\Item;
 use Hexogen\KDTree\ItemList;
+use PHPUnit\Framework\TestCase;
 
-abstract class TreeTestCase extends \PHPUnit_Framework_TestCase
+abstract class TreeTestCase extends TestCase
 {
     /**
      * @param int $num
