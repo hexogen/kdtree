@@ -7,12 +7,11 @@
 [![Quality Score][ico-code-quality]][link-code-quality]
 [![Total Downloads][ico-downloads]][link-downloads]
 
-PHP K-D Tree implementation.
+PHP multidimensional K-D Tree implementation.
 
 To receive all benefits from K-D Tree, use file system implementation(FSKDTree) as a cache. FSKDTree stores in binary
 format and uses lazy loading while traversing through nodes. Current approach provides much higher performance compared
-to deserialization. Its recommended to use SSD storage. On a cold run(when OS is not storing file in RAM) SSD gives
-~10X speed boost compared to HDD.
+to deserialization.
 
 ## Install
 
