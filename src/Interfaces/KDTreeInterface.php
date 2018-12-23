@@ -17,7 +17,7 @@ interface KDTreeInterface
     /**
      * @return NodeInterface|null root node of the tree
      */
-    public function getRoot();
+    public function getRoot() : ?NodeInterface;
 
     /**
      * @return array lower corner coordinate of the virtual multidimensional

@@ -84,7 +84,7 @@ class FSKDTree implements KDTreeInterface
     /**
      * @return NodeInterface
      */
-    public function getRoot()
+    public function getRoot(): ?NodeInterface
     {
         return $this->root;
     }

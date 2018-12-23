@@ -86,7 +86,7 @@ class FSNode implements NodeInterface
     /**
      * @param NodeInterface $node set right node
      */
-    public function setRight(NodeInterface $node)
+    public function setRight(NodeInterface $node): void
     {
         $this->right = $node;
     }
@@ -94,7 +94,7 @@ class FSNode implements NodeInterface
     /**
      * @param NodeInterface $node set left node
      */
-    public function setLeft(NodeInterface $node)
+    public function setLeft(NodeInterface $node): void
     {
         $this->left = $node;
     }
@@ -103,7 +103,7 @@ class FSNode implements NodeInterface
      * Returns right node if it exists, null otherwise
      * @return NodeInterface|null get right node
      */
-    public function getRight()
+    public function getRight(): ?NodeInterface
     {
         if ($this->rightPosition === null) {
             $this->readNode();
@@ -119,7 +119,7 @@ class FSNode implements NodeInterface
      * Returns left node if it exists, null otherwise
      * @return NodeInterface|null left node
      */
-    public function getLeft()
+    public function getLeft(): ?NodeInterface
     {
         if ($this->leftPosition === null) {
             $this->readNode();

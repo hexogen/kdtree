@@ -69,7 +69,7 @@ class KDTree implements KDTreeInterface
      * Get root node
      * @return NodeInterface|null return node or null if there is no nodes in the tree
      */
-    public function getRoot()
+    public function getRoot(): ?NodeInterface
     {
         return $this->root;
     }

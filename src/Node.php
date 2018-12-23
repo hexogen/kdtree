@@ -45,7 +45,7 @@ class Node implements NodeInterface
     /**
      * @param NodeInterface $node set right node
      */
-    public function setRight(NodeInterface $node)
+    public function setRight(NodeInterface $node): void
     {
         $this->right = $node;
     }
@@ -53,7 +53,7 @@ class Node implements NodeInterface
     /**
      * @param NodeInterface $node set left node
      */
-    public function setLeft(NodeInterface $node)
+    public function setLeft(NodeInterface $node): void
     {
         $this->left = $node;
     }
@@ -61,7 +61,7 @@ class Node implements NodeInterface
     /**
      * @return NodeInterface|null get right node
      */
-    public function getRight()
+    public function getRight(): ?NodeInterface
     {
         return $this->right;
     }
@@ -69,7 +69,7 @@ class Node implements NodeInterface
     /**
      * @return NodeInterface|null get left node
      */
-    public function getLeft()
+    public function getLeft(): ?NodeInterface
     {
         return $this->left;
     }

@@ -4,7 +4,10 @@
     "description": "file system KDTree index",
     "keywords": [
         "hexogen",
-        "kdtree"
+        "kdtree",
+        "data structures",
+        "algorithms",
+        "search"
     ],
     "homepage": "https://github.com/hexogen/kdtree",
     "license": "MIT",
@@ -17,7 +20,7 @@
         }
     ],
     "require": {
-        "php" : "~7.0"
+        "php" : "~7.1"
     },
     "require-dev": {
         "league/csv": "^8.0",
