@@ -11,3 +11,11 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 
 ### Deprecated
 - PHP 7.0 support
+
+
+## v0.2.0- 2018-12-23
+
+### Changed
+- PHP 7.0 support removed
+- Interfaces now returns types according to documentation (where it was not possible accoridng
+ php 7.0 limitations)
