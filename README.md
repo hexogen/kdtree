@@ -9,8 +9,7 @@
 
 PHP multidimensional K-D Tree implementation.
 
-To receive all benefits from K-D Tree, use file system implementation(FSKDTree) as a cache. FSKDTree stores in binary
-format and uses lazy loading while traversing through nodes. Current approach provides much higher performance compared
+To receive all benefits from K-D Tree, use file system implementation(FSKDTree). FSKDTree stores tree in binary format and uses lazy loading while traversing through nodes. Current approach provides much higher performance compared
 to deserialization.
 
 ## Install
