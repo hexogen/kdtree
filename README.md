@@ -75,7 +75,7 @@ $persister->convert($tree, 'treeName.bin');
 //ItemInterface factory
 $itemFactory = new ItemFactory();
 
-//Then init new instance of fyle system version of the tree
+//Then init new instance of file system version of the tree
 $fsTree = new FSKDTree('/path/to/dir/treeName.bin', $itemFactory);
 
 //Now use fs kdtree to search
