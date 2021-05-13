@@ -13,7 +13,7 @@ class ItemTest extends TestCase
      */
     private $instance;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->instance = new Item(11, [0.1, 1.1, 2.1, 3.1, 1.1]);
@@ -67,10 +67,11 @@ class ItemTest extends TestCase
 
     /**
      * @test
-     * @expectedException \OutOfRangeException
      */
     public function itShouldNotGetDimensionValue()
     {
+        $this->expectException(\OutOfRangeException::class);
+
         $this->instance->getNthDimension(5);
     }
 

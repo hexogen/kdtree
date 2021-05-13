@@ -19,14 +19,14 @@ class FSNodeTest extends TreeTestCase
      */
     private $handler;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->handler = fopen(__DIR__ . '/fixture/fs/tree100x10.bin', 'rb');
         $factory = new ItemFactory();
         $this->root = new FSNode($factory, $this->handler, 168, 10);
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         fclose($this->handler);
     }

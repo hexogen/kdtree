@@ -10,6 +10,7 @@ use Hexogen\KDTree\NearestSearch;
 use Hexogen\KDTree\Node;
 use Hexogen\KDTree\Point;
 use League\Csv\Reader;
+use League\Csv\Statement;
 use \Mockery as m;
 use PHPUnit\Framework\TestCase;
 
@@ -117,10 +118,11 @@ class NearestSearchTest extends TestCase
 
     /**
      * @test
-     * @expectedException \Hexogen\KDTree\Exception\ValidationException
      */
     public function itShouldNotValidatePoint()
     {
+        $this->expectException(\Hexogen\KDTree\Exception\ValidationException::class);
+
         $itemList = new ItemList(3);
         $itemList->addItem(new Item(1, [2., 3., 4.]));
         $tree = new KDTree($itemList);
@@ -204,7 +206,10 @@ class NearestSearchTest extends TestCase
         $reader = Reader::createFromPath(__DIR__ . '/fixture/' . $dimensions . 'd/' . $name);
         $reader->setDelimiter(' ');
         $itemList = new ItemList($dimensions);
-        $points = $reader->fetch();
+
+        $stmt = Statement::create();
+        $points =  $stmt->process($reader);
+
 
         $i = 0;
         foreach ($points as $point) {
