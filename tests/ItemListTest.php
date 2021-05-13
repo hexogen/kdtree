@@ -14,7 +14,7 @@ class ItemListTest extends TestCase
      */
     private $instance;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->instance = new ItemList(2);

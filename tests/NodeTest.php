@@ -14,13 +14,13 @@ class NodeTest extends TestCase
      */
     private $instance;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $itemMock = m::mock(Item::class);
         $this->instance = new Node($itemMock);
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         m::close();
     }
