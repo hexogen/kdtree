@@ -6,8 +6,6 @@ php:
   - 8.0
   - 8.1.0
 
-install: skip
-
 # This triggers builds to run on the new TravisCI infrastructure.
 # See: http://docs.travis-ci.com/user/workers/container-based-infrastructure/
 sudo: false
@@ -16,11 +14,6 @@ sudo: false
 cache:
   directories:
     - $HOME/.composer/cache
-
-matrix:
-  include:
-    - php: 7.3
-      env: 'COMPOSER_FLAGS="--prefer-stable --prefer-lowest" XDEBUG_MODE="coverage"'
 
 before_script:
   - travis_retry composer self-update
