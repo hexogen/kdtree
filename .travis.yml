@@ -1,9 +1,10 @@
 language: php
-
+dist: bionic
 php:
   - 7.3
   - 7.4
   - 8.0
+  - 8.1.0
 
 # This triggers builds to run on the new TravisCI infrastructure.
 # See: http://docs.travis-ci.com/user/workers/container-based-infrastructure/
