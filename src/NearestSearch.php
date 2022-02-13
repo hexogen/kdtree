@@ -46,7 +46,7 @@ class NearestSearch extends SearchAbstract
         if ($root == null) {
             return [];
         }
-        
+
         /**
          * @var array orthogonal square distances to the point
          */
@@ -105,9 +105,9 @@ class NearestSearch extends SearchAbstract
      * Calculate minimal possible Euclidean distance from the point to an item
      *
      * @param $orthogonalDistances
-     * @return int
+     * @return float
      */
-    private function getPossibleDistance(array $orthogonalDistances) : int
+    private function getPossibleDistance(array $orthogonalDistances) : float
     {
         $possibleDistance = 0.;
         foreach ($orthogonalDistances as $orthogonalDistance) {
@@ -282,7 +282,7 @@ class NearestSearch extends SearchAbstract
         array $orthogonalDistances,
         float $possibleDistance
     ) {
-    
+
         // possible orthogonal distances to the right node
         $branchOrthogonalDistances = $orthogonalDistances;
         $branchPossibleDistance = $possibleDistance;
@@ -350,7 +350,7 @@ class NearestSearch extends SearchAbstract
         array $orthogonalDistances,
         float $possibleDistance
     ) {
-    
+
         // possible orthogonal distances to the right node
         $leftOrthogonalDistances = $rightOrthogonalDistances = $orthogonalDistances;
         $leftPossibleDistance = $rightPossibleDistance = $possibleDistance;
@@ -421,7 +421,7 @@ class NearestSearch extends SearchAbstract
         float $secondPossibleDistance,
         int $nextDimension
     ) {
-    
+
         if ($firstPossibleDistance < $this->maxQueuedDistance) {
             $this->searchNearest(
                 $firstNode,
