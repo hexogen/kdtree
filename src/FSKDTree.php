@@ -175,7 +175,7 @@ class FSKDTree implements KDTreeInterface
      * Read point
      * @return array
      */
-    private function readPoint()
+    private function readPoint(): array
     {
         $dataLength = FSKDTree::FLOAT_LENGTH * $this->dimensions;
         $binData = fread($this->handler, $dataLength);
