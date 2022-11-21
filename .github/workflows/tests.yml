@@ -40,7 +40,7 @@ jobs:
               run:  vendor/bin/phpcs --standard=psr2 src/
 
             - name: Execute PHPUnit
-              run:  vendor/bin/phpunit --coverage-text --coverage-clover=coverage.clover
+              run:  vendor/bin/phpunit
 
             - name: Upload Scrutinizer coverage
               uses: sudo-bot/action-scrutinizer@latest
