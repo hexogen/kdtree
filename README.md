@@ -1,6 +1,7 @@
 # K-D Tree
 
 [![Latest Version on Packagist][ico-version]][link-packagist]
+[![Build Status][ico-tests]][link-tests]
 [![Software License][ico-license]](LICENSE.md)
 [![Coverage Status][ico-scrutinizer]][link-scrutinizer]
 [![Quality Score][ico-code-quality]][link-code-quality]
@@ -116,14 +117,19 @@ If you discover any security related issues, please email volodymyrbas@gmail.com
 The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
 
 [ico-version]: https://img.shields.io/packagist/v/hexogen/kdtree.svg?style=flat-square
+[ico-tests]: https://img.shields.io/github/workflow/status/hexogen/kdtree/Tests?label=Tests&style=flat-square
 [ico-license]: https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square
 [ico-scrutinizer]: https://img.shields.io/scrutinizer/coverage/g/hexogen/kdtree.svg?style=flat-square
 [ico-code-quality]: https://img.shields.io/scrutinizer/g/hexogen/kdtree.svg?style=flat-square
 [ico-downloads]: https://img.shields.io/packagist/dt/hexogen/kdtree.svg?style=flat-square
 
 [link-packagist]: https://packagist.org/packages/hexogen/kdtree
+[link-tests]: https://github.com/hexogen/kdtree/actions?query=workflow%3ATests
 [link-scrutinizer]: https://scrutinizer-ci.com/g/hexogen/kdtree/code-structure
 [link-code-quality]: https://scrutinizer-ci.com/g/hexogen/kdtree
 [link-downloads]: https://packagist.org/packages/hexogen/kdtree
 [link-author]: https://github.com/hexogen
 [link-contributors]: ../../contributors
+
+
+<a href="https://github.com/GrahamCampbell/Laravel-Markdown/actions?query=workflow%3ATests"><img src="https://img.shields.io/github/workflow/status/GrahamCampbell/Laravel-Markdown/Tests?label=Tests&style=flat-square" alt="Build Status"></img></a>
