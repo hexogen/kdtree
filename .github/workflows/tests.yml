@@ -34,5 +34,12 @@ jobs:
                   max_attempts: 5
                   command: composer update --no-interaction --no-progress
 
+            - name: Execute PHPcs
+              run:  vendor/bin/phpcs --standard=psr2 src/
+
             - name: Execute PHPUnit
-              run: vendor/bin/phpunit
+              run:  vendor/bin/phpunit --coverage-text --coverage-clover=coverage.clover
+
+            - name: Execute Scrutinizer
+              run:  wget https://scrutinizer-ci.com/ocular.phar && php ocular.phar code-coverage:upload --format=php-clover coverage.clover
+
