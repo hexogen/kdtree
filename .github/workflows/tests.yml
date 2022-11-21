@@ -41,6 +41,3 @@ jobs:
 
             - name: Execute PHPUnit
               run:  vendor/bin/phpunit
-
-            - name: Upload Scrutinizer coverage
-              uses: sudo-bot/action-scrutinizer@latest
