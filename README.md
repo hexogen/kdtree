@@ -115,7 +115,7 @@ If you discover any security related issues, please email volodymyrbas@gmail.com
 The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
 
 [ico-version]: https://img.shields.io/packagist/v/hexogen/kdtree.svg?style=flat-square
-[ico-tests]: https://img.shields.io/github/workflow/status/hexogen/kdtree/Tests?label=Tests&style=flat-square
+[ico-tests]: https://img.shields.io/github/actions/workflow/status/hexogen/kdtree/tests.yml?branch=master
 [ico-license]: https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square
 [ico-downloads]: https://img.shields.io/packagist/dt/hexogen/kdtree.svg?style=flat-square
 
