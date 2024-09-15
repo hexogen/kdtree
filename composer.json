@@ -24,7 +24,7 @@
     },
     "require-dev": {
         "league/csv": "^9.7.0",
-        "mockery/mockery": "dev-master",
+        "mockery/mockery": "dev-main",
         "phpunit/phpunit": "^9.0",
         "squizlabs/php_codesniffer": "^3.5.0"
     },

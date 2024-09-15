@@ -36,8 +36,7 @@ class FSKDTreeTest extends TreeTestCase
 
         $this->checkTree($tree);
 
-        if($tree->getItemCount() == 0)
-        {
+        if ($tree->getItemCount() == 0) {
             $this->assertTrue(true); // preform an assert to avoid warning
         }
     }
