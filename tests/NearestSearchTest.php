@@ -180,7 +180,7 @@ class NearestSearchTest extends TestCase
     /**
      * Circle data provider
      */
-    public function pointsProvider()
+    public static function pointsProvider(): array
     {
         return [
             ['circle4.txt'],

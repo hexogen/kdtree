@@ -2,6 +2,7 @@
 
 namespace Hexogen\KDTree\Tests;
 
+use Hexogen\KDTree\Exception\ValidationException;
 use Hexogen\KDTree\Interfaces\KDTreeInterface;
 use Hexogen\KDTree\Interfaces\NodeInterface;
 use Hexogen\KDTree\Item;
@@ -15,9 +16,13 @@ abstract class TreeTestCase extends TestCase
      * @param int $dimensions
      * @param array $coordinatesSet
      * @return ItemList
+     * @throws ValidationException
      */
-    protected function getRandomItemsList(int $num = 100, int $dimensions = 2, array $coordinatesSet = [])
-    {
+    protected static function getRandomItemsList(
+        int $num = 100,
+        int $dimensions = 2,
+        array $coordinatesSet = []
+    ) : ItemList {
         $list = new ItemList($dimensions);
         for ($i = 0; $i < $num; $i++) {
             if (empty($coordinatesSet)) {

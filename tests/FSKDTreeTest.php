@@ -27,7 +27,7 @@ class FSKDTreeTest extends TreeTestCase
     /**
      * @dataProvider FSTreeDataProvider
      * @test
-     * @param $path
+     * @param string $path
      */
     public function itShouldCheckTreeStructure(string $path)
     {
@@ -70,7 +70,7 @@ class FSKDTreeTest extends TreeTestCase
     /**
      * @return array
      */
-    public function FSTreeDataProvider()
+    public static function FSTreeDataProvider()
     {
         return [
             [__DIR__ . '/fixture/fs/tree0x10.bin', 10, 0],
