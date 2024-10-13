@@ -3,6 +3,7 @@
          backupGlobals="false"
          colors="true"
          convertWarningsToExceptions="false"
+         convertDeprecatedErrorsToExceptions="false"
          processIsolation="false"
          stopOnFailure="false">
     <testsuites>
