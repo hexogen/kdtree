@@ -27,7 +27,7 @@ jobs:
                 with:
                     php-version: ${{ matrix.php }}
                     tools: composer:v2
-                    coverage: none
+                    coverage: xdebug
 
             -   name: Setup Problem Matchers
                 run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
