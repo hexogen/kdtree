@@ -39,5 +39,9 @@ jobs:
             - name: Execute PHPcs
               run:  vendor/bin/phpcs --standard=psr2 src/
 
-            - name: Execute PHPUnit
-              run:  vendor/bin/phpunit
+            -   name: Run tests and collect coverage
+                run: vendor/bin/phpunit --coverage-clover coverage.xml .
+            -   name: Upload coverage to Codecov
+                uses: codecov/codecov-action@v4
+                env:
+                    CODECOV_TOKEN: ${{ secrets.CODECOV_ORG_TOKEN }}
