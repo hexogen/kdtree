@@ -109,7 +109,6 @@ If you discover any security related issues, please email volodymyrbas@gmail.com
 ## Credits
 
 - [Volodymyr Basarab][link-author]
-- [All Contributors][link-contributors]
 
 ## License
 
@@ -126,4 +125,3 @@ The MIT License (MIT). Please see [License File](LICENSE.md) for more informatio
 [link-codecov]: https://codecov.io/gh/hexogen/kdtree
 [link-downloads]: https://packagist.org/packages/hexogen/kdtree
 [link-author]: https://github.com/hexogen
-[link-contributors]: ../../contributors
