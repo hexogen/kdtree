@@ -45,6 +45,7 @@ jobs:
             -   name: Execute PHPUnit
                 run: vendor/bin/phpunit --coverage-clover=coverage.xml
             -   name: Upload coverage to Codecov
+                if: matrix.php == '8.3'
                 uses: codecov/codecov-action@v3
                 with:
                     files: ./coverage.xml
