@@ -2,6 +2,7 @@
 
 [![Latest Version on Packagist][ico-version]][link-packagist]
 [![Build Status][ico-tests]][link-tests]
+[![codecov][ico-codecov]][link-codecov]
 [![Software License][ico-license]](LICENSE.md)
 [![Total Downloads][ico-downloads]][link-downloads]
 
@@ -116,11 +117,13 @@ The MIT License (MIT). Please see [License File](LICENSE.md) for more informatio
 
 [ico-version]: https://img.shields.io/packagist/v/hexogen/kdtree.svg?style=flat-square
 [ico-tests]: https://img.shields.io/github/actions/workflow/status/hexogen/kdtree/tests.yml?branch=master
+[ico-codecov]: https://codecov.io/gh/hexogen/kdtree/graph/badge.svg?token=176L4UA0Y1
 [ico-license]: https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square
 [ico-downloads]: https://img.shields.io/packagist/dt/hexogen/kdtree.svg?style=flat-square
 
 [link-packagist]: https://packagist.org/packages/hexogen/kdtree
 [link-tests]: https://github.com/hexogen/kdtree/actions?query=workflow%3ATests
+[link-codecov]: https://codecov.io/gh/hexogen/kdtree
 [link-downloads]: https://packagist.org/packages/hexogen/kdtree
 [link-author]: https://github.com/hexogen
 [link-contributors]: ../../contributors
