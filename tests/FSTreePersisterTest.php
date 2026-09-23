@@ -97,6 +97,22 @@ class FSTreePersisterTest extends TreeTestCase
     }
 
     #[Test]
+    public function itShouldThrowWhenWriteFails()
+    {
+        FailingStreamWrapper::register();
+        try {
+            $this->expectException(FileException::class);
+            $this->expectExceptionMessage('Unable to write');
+
+            $tree = new KDTree(self::getRandomItemsList(5, 2));
+            $saver = new FSTreePersister('failing://storage');
+            $saver->convert($tree, 'tree.bin');
+        } finally {
+            FailingStreamWrapper::unregister();
+        }
+    }
+
+    #[Test]
     public function itShouldThrowWhenDirectoryIsNotWritable()
     {
         $this->expectException(FileException::class);

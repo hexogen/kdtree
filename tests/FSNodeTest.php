@@ -5,7 +5,9 @@ namespace Hexogen\KDTree\Tests;
 use Hexogen\KDTree\FSKDTree;
 use Hexogen\KDTree\FSNode;
 use Hexogen\KDTree\Interfaces\ItemInterface;
+use Hexogen\KDTree\Item;
 use Hexogen\KDTree\ItemFactory;
+use Hexogen\KDTree\Node;
 use PHPUnit\Framework\Attributes\Test;
 
 class FSNodeTest extends TreeTestCase
@@ -59,6 +61,24 @@ class FSNodeTest extends TreeTestCase
         $right = $this->root->getRight();
 
         $this->assertInstanceOf(FSNode::class, $right);
+    }
+
+    #[Test]
+    public function itShouldSetLeftNode()
+    {
+        $left = new Node(new Item(-1, array_fill(0, 10, 0.)));
+        $this->root->setLeft($left);
+
+        $this->assertSame($left, $this->root->getLeft());
+    }
+
+    #[Test]
+    public function itShouldSetRightNode()
+    {
+        $right = new Node(new Item(-1, array_fill(0, 10, 0.)));
+        $this->root->setRight($right);
+
+        $this->assertSame($right, $this->root->getRight());
     }
 
     #[Test]

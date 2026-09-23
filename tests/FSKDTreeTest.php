@@ -105,6 +105,48 @@ class FSKDTreeTest extends TreeTestCase
     }
 
     #[Test]
+    public function itShouldThrowOnZeroDimensions()
+    {
+        $data = FSKDTree::MAGIC . chr(FSKDTree::FORMAT_VERSION) . pack('VP', 0, 0);
+        file_put_contents(__DIR__ . '/storage/zero-dims.bin', $data);
+
+        $this->expectException(FileException::class);
+        $this->expectExceptionMessage('dimensions count');
+        new FSKDTree(__DIR__ . '/storage/zero-dims.bin', new ItemFactory());
+    }
+
+    #[Test]
+    public function itShouldThrowOnNegativeItemCount()
+    {
+        $data = FSKDTree::MAGIC . chr(FSKDTree::FORMAT_VERSION) . pack('VP', 2, -1);
+        file_put_contents(__DIR__ . '/storage/negative-count.bin', $data);
+
+        $this->expectException(FileException::class);
+        $this->expectExceptionMessage('negative item count');
+        new FSKDTree(__DIR__ . '/storage/negative-count.bin', new ItemFactory());
+    }
+
+    #[Test]
+    public function itShouldThrowWhenNodeIsTruncated()
+    {
+        // valid header and boundaries for a 2-D tree with 1 item, then only half a node
+        $data = FSKDTree::MAGIC . chr(FSKDTree::FORMAT_VERSION)
+            . pack('VP', 2, 1)
+            . pack('e2', 1., 1.)
+            . pack('e2', 1., 1.)
+            . pack('PP', 1, 0);
+        file_put_contents(__DIR__ . '/storage/truncated-node.bin', $data);
+
+        $tree = new FSKDTree(__DIR__ . '/storage/truncated-node.bin', new ItemFactory());
+        $root = $tree->getRoot();
+        $this->assertNotNull($root);
+
+        $this->expectException(FileException::class);
+        $this->expectExceptionMessage('unable to read node');
+        $root->getItem();
+    }
+
+    #[Test]
     public function itShouldThrowOnTruncatedFile()
     {
         $data = FSKDTree::MAGIC . chr(FSKDTree::FORMAT_VERSION) . pack('VP', 2, 5);
