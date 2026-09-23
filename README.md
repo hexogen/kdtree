@@ -19,6 +19,8 @@ Via Composer
 $ composer require hexogen/kdtree
 ```
 
+Requires PHP 8.2 or newer; tested on PHP 8.2, 8.3, 8.4 and 8.5.
+
 ## Usage
 
 ### Tree creation

@@ -4,7 +4,6 @@ namespace Hexogen\KDTree\Tests;
 
 use Hexogen\KDTree\Item;
 use Hexogen\KDTree\Node;
-use \Mockery as m;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
@@ -17,13 +16,7 @@ class NodeTest extends TestCase
 
     protected function setUp(): void
     {
-        $itemMock = m::mock(Item::class);
-        $this->instance = new Node($itemMock);
-    }
-
-    public function tearDown(): void
-    {
-        m::close();
+        $this->instance = new Node($this->createStub(Item::class));
     }
 
     /**
@@ -37,7 +30,7 @@ class NodeTest extends TestCase
     #[Test]
     public function itShouldGetAndSetLeftNode()
     {
-        $itemMock = m::mock(Item::class);
+        $itemMock = $this->createStub(Item::class);
         $this->assertNull($this->instance->getLeft());
         $left = new Node($itemMock);
         $this->instance->setLeft($left);
@@ -49,7 +42,7 @@ class NodeTest extends TestCase
     #[Test]
     public function itShouldGetAndSetRightNode()
     {
-        $itemMock = m::mock(Item::class);
+        $itemMock = $this->createStub(Item::class);
         $this->assertNull($this->instance->getRight());
         $right = new Node($itemMock);
         $this->instance->setRight($right);
@@ -60,7 +53,7 @@ class NodeTest extends TestCase
     #[Test]
     public function itShouldGetAnItem()
     {
-        $itemMock = m::mock(Item::class);
+        $itemMock = $this->createStub(Item::class);
         $node = new Node($itemMock);
         $this->assertSame($itemMock, $node->getItem());
     }

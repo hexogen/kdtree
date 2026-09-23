@@ -4,6 +4,18 @@ All Notable changes to `hexogen/kdtree` will be documented in this file.
 
 Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) principles.
 
+## v0.3.2 - 2026-09-23
+
+### Added
+- PHP 8.5 support: the test suite runs on PHP 8.2, 8.3, 8.4 and 8.5 in CI. No library code
+  changes were needed (none of the PHP 8.5 deprecations apply).
+
+### Changed
+- The test suite now fails on PHP deprecations, notices and warnings raised by the
+  library's own code, so problems with new PHP versions show up in CI.
+- Dev dependencies: `phpunit/phpunit` `^11.5.43` (first 11.5 release adapted to PHP 8.5);
+  `mockery/mockery` removed, `NodeTest` uses PHPUnit stubs instead.
+
 ## v0.3.1 - 2026-09-23
 
 ### Fixed

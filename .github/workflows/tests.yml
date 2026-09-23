@@ -7,18 +7,18 @@ on:
 jobs:
     tests:
         name: PHP ${{ matrix.php }}
-        runs-on: ubuntu-22.04
+        runs-on: ubuntu-latest
 
         env:
             XDEBUG_MODE: coverage
 
         strategy:
             matrix:
-                php: [ '8.2', '8.3' ]
+                php: [ '8.2', '8.3', '8.4', '8.5' ]
 
         steps:
             -   name: Checkout Code
-                uses: actions/checkout@v3
+                uses: actions/checkout@v4
                 with:
                     fetch-depth: 10
 
@@ -33,20 +33,20 @@ jobs:
                 run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
             -   name: Install PHP Dependencies
-                uses: nick-invision/retry@v2
+                uses: nick-fields/retry@v3
                 with:
                     timeout_minutes: 5
                     max_attempts: 5
                     command: composer update --no-interaction --no-progress
 
             -   name: Execute PHPcs
-                run: vendor/bin/phpcs --standard=psr2 src/
+                run: vendor/bin/phpcs --standard=PSR2 src/ tests/
 
             -   name: Execute PHPUnit
                 run: vendor/bin/phpunit --coverage-clover=coverage.xml
             -   name: Upload coverage to Codecov
-                if: matrix.php == '8.3'
-                uses: codecov/codecov-action@v3
+                if: matrix.php == '8.4'
+                uses: codecov/codecov-action@v5
                 with:
                     files: ./coverage.xml
                     flags: unittests
