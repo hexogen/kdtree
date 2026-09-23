@@ -2,6 +2,7 @@
 
 namespace Hexogen\KDTree\Tests;
 
+use Hexogen\KDTree\Exception\FileException;
 use Hexogen\KDTree\FSKDTree;
 use Hexogen\KDTree\FSNode;
 use Hexogen\KDTree\Interfaces\ItemInterface;
@@ -86,5 +87,34 @@ class FSNodeTest extends TreeTestCase
     {
         $item = $this->root->getItem();
         $this->assertInstanceOf(ItemInterface::class, $item);
+    }
+
+    #[Test]
+    public function itShouldThrowWhenNodeIsTruncated()
+    {
+        $path = __DIR__ . '/storage/truncated-node.bin';
+        file_put_contents($path, pack('PP', 1, 0));
+        $handler = fopen($path, 'rb');
+        $node = new FSNode(new ItemFactory(), $handler, 0, 2);
+
+        $this->expectException(FileException::class);
+        $this->expectExceptionMessage('unable to read node');
+        try {
+            $node->getItem();
+        } finally {
+            fclose($handler);
+        }
+    }
+
+    #[Test]
+    public function itShouldThrowWhenHandleIsClosed()
+    {
+        $handler = fopen(__DIR__ . '/fixture/fs/tree100x10.bin', 'rb');
+        $node = new FSNode(new ItemFactory(), $handler, 0, 10);
+        fclose($handler);
+
+        $this->expectException(FileException::class);
+        $this->expectExceptionMessage('closed');
+        $node->getItem();
     }
 }

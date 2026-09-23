@@ -31,12 +31,16 @@ class NearestSearch extends SearchAbstract
      *
      * @api
      * @param PointInterface $point
-     * @param int $resultLength
+     * @param int $resultLength number of nearest items to return, 0 returns an empty array
      * @return ItemInterface[]
+     * @throws ValidationException if the point has wrong dimensions or $resultLength is negative
      */
     public function search(PointInterface $point, int $resultLength = 1) : array
     {
         $this->validatePoint($point);
+        if ($resultLength < 0) {
+            throw new ValidationException('$resultLength should not be negative');
+        }
         $this->point = $point;
 
         $upperBound = $this->tree->getMaxBoundary();
@@ -173,7 +177,8 @@ class NearestSearch extends SearchAbstract
     {
         $distance = 0.;
         for ($i = 0; $i < $this->dimensions; $i++) {
-            $distance += pow($item->getNthDimension($i) - $point->getNthDimension($i), 2);
+            $delta = $item->getNthDimension($i) - $point->getNthDimension($i);
+            $distance += $delta * $delta;
         }
         return $distance;
     }
@@ -249,17 +254,19 @@ class NearestSearch extends SearchAbstract
     /**
      * Get Euclidean distance between point and an item in given dimension
      *
-     * @param $pointCoordinate
-     * @param $upperBound
-     * @param $lowerBound
-     * @return float|number
+     * @param float $pointCoordinate
+     * @param float $upperBound
+     * @param float $lowerBound
+     * @return float
      */
-    private function getPossibleOrthogonalDistance($pointCoordinate, $upperBound, $lowerBound)
+    private function getPossibleOrthogonalDistance(float $pointCoordinate, float $upperBound, float $lowerBound): float
     {
         if ($pointCoordinate > $upperBound) {
-            return pow($pointCoordinate - $upperBound, 2);
+            $delta = $pointCoordinate - $upperBound;
+            return $delta * $delta;
         } elseif ($pointCoordinate < $lowerBound) {
-            return pow($lowerBound - $pointCoordinate, 2);
+            $delta = $lowerBound - $pointCoordinate;
+            return $delta * $delta;
         }
         return 0.;
     }

@@ -4,7 +4,10 @@ namespace Hexogen\KDTree\Tests;
 
 use Hexogen\KDTree\Exception\FileException;
 use Hexogen\KDTree\FSKDTree;
+use Hexogen\KDTree\Interfaces\ItemInterface;
 use Hexogen\KDTree\ItemFactory;
+use Hexogen\KDTree\NearestSearch;
+use Hexogen\KDTree\Point;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 
@@ -127,7 +130,7 @@ class FSKDTreeTest extends TreeTestCase
     }
 
     #[Test]
-    public function itShouldThrowWhenNodeIsTruncated()
+    public function itShouldThrowWhenNodeDataIsTruncated()
     {
         // valid header and boundaries for a 2-D tree with 1 item, then only half a node
         $data = FSKDTree::MAGIC . chr(FSKDTree::FORMAT_VERSION)
@@ -137,13 +140,92 @@ class FSKDTreeTest extends TreeTestCase
             . pack('PP', 1, 0);
         file_put_contents(__DIR__ . '/storage/truncated-node.bin', $data);
 
-        $tree = new FSKDTree(__DIR__ . '/storage/truncated-node.bin', new ItemFactory());
-        $root = $tree->getRoot();
-        $this->assertNotNull($root);
+        $this->expectException(FileException::class);
+        $this->expectExceptionMessage('header declares 1 items');
+        new FSKDTree(__DIR__ . '/storage/truncated-node.bin', new ItemFactory());
+    }
+
+    #[Test]
+    public function itShouldThrowOnTrailingData()
+    {
+        $data = file_get_contents(__DIR__ . '/fixture/fs/tree100x10.bin') . 'x';
+        file_put_contents(__DIR__ . '/storage/trailing.bin', $data);
 
         $this->expectException(FileException::class);
-        $this->expectExceptionMessage('unable to read node');
-        $root->getItem();
+        $this->expectExceptionMessage('header declares 100 items');
+        new FSKDTree(__DIR__ . '/storage/trailing.bin', new ItemFactory());
+    }
+
+    #[Test]
+    public function itShouldReadStreamsThatDoNotReportTheirSize()
+    {
+        NoStatStreamWrapper::register();
+        try {
+            $path = NoStatStreamWrapper::PROTOCOL . '://' . __DIR__ . '/fixture/fs/tree100x10.bin';
+            $tree = new FSKDTree($path, new ItemFactory());
+
+            $this->assertSame(100, $tree->getItemCount());
+            $this->checkTree($tree);
+        } finally {
+            NoStatStreamWrapper::unregister();
+        }
+    }
+
+    #[Test]
+    public function itShouldKeepNodesUsableAfterTreeIsReleased()
+    {
+        $tree = new FSKDTree(__DIR__ . '/fixture/fs/tree100x10.bin', new ItemFactory());
+        $root = $tree->getRoot();
+        unset($tree);
+
+        $this->assertInstanceOf(ItemInterface::class, $root->getItem());
+        $this->assertNotNull($root->getLeft());
+        $this->assertInstanceOf(ItemInterface::class, $root->getLeft()->getItem());
+    }
+
+    #[Test]
+    public function itShouldCacheAllReadNodesByDefault()
+    {
+        $tree = new FSKDTree(__DIR__ . '/fixture/fs/tree100x10.bin', new ItemFactory());
+        $root = $tree->getRoot();
+
+        $this->assertSame($root->getLeft(), $root->getLeft());
+        $this->assertSame($root->getLeft()->getRight(), $root->getLeft()->getRight());
+    }
+
+    #[Test]
+    public function itShouldCacheOnlyGivenNumberOfLevels()
+    {
+        $tree = new FSKDTree(__DIR__ . '/fixture/fs/tree100x10.bin', new ItemFactory(), 1);
+        $root = $tree->getRoot();
+        $left = $root->getLeft();
+
+        $this->assertSame($left, $root->getLeft(), 'level 1 should be cached');
+        $this->assertNotSame($left->getRight(), $left->getRight(), 'level 2 should not be cached');
+        $this->assertEquals($left->getRight()->getItem(), $left->getRight()->getItem());
+    }
+
+    #[Test]
+    public function itShouldSearchTheSameWithAnyCacheDepth()
+    {
+        $path = __DIR__ . '/fixture/fs/tree1000x2.bin';
+        $cached = new NearestSearch(new FSKDTree($path, new ItemFactory()));
+        $uncached = new NearestSearch(new FSKDTree($path, new ItemFactory(), 0));
+        $shallow = new NearestSearch(new FSKDTree($path, new ItemFactory(), 3));
+
+        for ($i = 0; $i < 20; $i++) {
+            $point = new Point([mt_rand(0, 1000) / 1000, mt_rand(0, 1000) / 1000]);
+            $expected = array_map(fn($item) => $item->getId(), $cached->search($point, 5));
+            $this->assertSame($expected, array_map(fn($item) => $item->getId(), $uncached->search($point, 5)));
+            $this->assertSame($expected, array_map(fn($item) => $item->getId(), $shallow->search($point, 5)));
+        }
+    }
+
+    #[Test]
+    public function itShouldRejectNegativeCacheDepth()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        new FSKDTree(__DIR__ . '/fixture/fs/tree100x10.bin', new ItemFactory(), -1);
     }
 
     #[Test]

@@ -74,6 +74,10 @@ with `FSTreePersister`. `FSKDTree` and `FSTreePersister` throw
 `Hexogen\KDTree\Exception\FileException` when a file cannot be opened, is
 truncated, or has an unsupported format.
 
+`FSTreePersister` writes to a temporary file and renames it over the target, so
+it is safe to rebuild a tree file while other processes are reading it (on
+Windows the rename fails while the file is open).
+
 ### File system version of the tree
 
 ``` php
@@ -92,6 +96,14 @@ $result = $fsSearcher->search(new Point([1.25, 3.5]), 2);
 echo $result[0]->getId(); // 2
 echo $result[1]->getId(); // 1
 
+```
+
+Nodes read from the file are cached, so a long-lived `FSKDTree` gradually loads
+the whole file into memory. To bound memory, keep only the top levels cached:
+
+``` php
+// cache the root and 12 levels below it (at most ~8k nodes), read the rest on demand
+$fsTree = new FSKDTree('/path/to/dir/treeName.bin', $itemFactory, 12);
 ```
 
 ## Change log

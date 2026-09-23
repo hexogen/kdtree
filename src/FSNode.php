@@ -55,14 +55,25 @@ class FSNode implements NodeInterface
     private $dimensions;
 
     /**
+     * @var int|null number of levels below this node whose nodes stay cached, null for all
+     */
+    private $cacheDepth;
+
+    /**
      * FSNode constructor.
      * @param ItemFactoryInterface $factory
      * @param resource $handler file handler
      * @param int $position node start position in the file
      * @param int $dimensions number of dimensions in item
+     * @param int|null $cacheDepth levels below this node that keep read children in memory, null for all
      */
-    public function __construct(ItemFactoryInterface $factory, $handler, int $position, int $dimensions)
-    {
+    public function __construct(
+        ItemFactoryInterface $factory,
+        $handler,
+        int $position,
+        int $dimensions,
+        ?int $cacheDepth = null
+    ) {
         $this->item = null;
         $this->left = null;
         $this->right = null;
@@ -72,6 +83,7 @@ class FSNode implements NodeInterface
         $this->position = $position;
         $this->factory = $factory;
         $this->dimensions = $dimensions;
+        $this->cacheDepth = $cacheDepth;
     }
 
     /**
@@ -107,13 +119,20 @@ class FSNode implements NodeInterface
      */
     public function getRight(): ?NodeInterface
     {
+        if ($this->right !== null) {
+            return $this->right;
+        }
         if ($this->rightPosition === null) {
             $this->readNode();
         }
-        if ($this->right === null && $this->rightPosition !== 0) {
-            $this->right = $this->makeChild($this->rightPosition);
+        if ($this->rightPosition === 0) {
+            return null;
         }
-        return $this->right;
+        $right = $this->makeChild($this->rightPosition);
+        if ($this->cachesChildren()) {
+            $this->right = $right;
+        }
+        return $right;
     }
 
     /**
@@ -122,13 +141,20 @@ class FSNode implements NodeInterface
      */
     public function getLeft(): ?NodeInterface
     {
+        if ($this->left !== null) {
+            return $this->left;
+        }
         if ($this->leftPosition === null) {
             $this->readNode();
         }
-        if ($this->left === null && $this->leftPosition !== 0) {
-            $this->left = $this->makeChild($this->leftPosition);
+        if ($this->leftPosition === 0) {
+            return null;
         }
-        return $this->left;
+        $left = $this->makeChild($this->leftPosition);
+        if ($this->cachesChildren()) {
+            $this->left = $left;
+        }
+        return $left;
     }
 
     /**
@@ -137,7 +163,16 @@ class FSNode implements NodeInterface
      */
     private function makeChild(int $position): FSNode
     {
-        return new FSNode($this->factory, $this->handler, $position, $this->dimensions);
+        $childCacheDepth = $this->cacheDepth === null ? null : max(0, $this->cacheDepth - 1);
+        return new FSNode($this->factory, $this->handler, $position, $this->dimensions, $childCacheDepth);
+    }
+
+    /**
+     * @return bool true if children read from the file should be kept in memory
+     */
+    private function cachesChildren(): bool
+    {
+        return $this->cacheDepth === null || $this->cacheDepth > 0;
     }
 
     /**
@@ -146,8 +181,11 @@ class FSNode implements NodeInterface
      */
     private function readNode()
     {
-        $nodeLength = 3 * FSKDTree::INT_LENGTH + FSKDTree::FLOAT_LENGTH * $this->dimensions;
+        $nodeLength = FSKDTree::getNodeLength($this->dimensions);
 
+        if (!is_resource($this->handler)) {
+            throw new FileException('kd tree file handle has been closed');
+        }
         fseek($this->handler, $this->position);
         $binData = fread($this->handler, $nodeLength);
 

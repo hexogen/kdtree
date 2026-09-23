@@ -6,6 +6,8 @@ use Hexogen\KDTree\Interfaces\ItemInterface;
 use Hexogen\KDTree\Interfaces\ItemListInterface;
 use Hexogen\KDTree\Interfaces\KDTreeInterface;
 use Hexogen\KDTree\Interfaces\NodeInterface;
+use Random\Engine\Xoshiro256StarStar;
+use Random\Randomizer;
 
 class KDTree implements KDTreeInterface
 {
@@ -40,11 +42,20 @@ class KDTree implements KDTreeInterface
     private $dimensions;
 
     /**
+     * @var Randomizer|null pivot source, only used while the tree is built
+     */
+    private $randomizer;
+
+    /**
      * KDTree constructor.
      * @param ItemListInterface $itemList
+     * @param Randomizer|null $randomizer pivot source for the build; pass a seeded one
+     *        (e.g. new Randomizer(new Xoshiro256StarStar($seed))) for a reproducible tree shape.
+     *        Defaults to a privately seeded generator, so mt_rand()/mt_srand() are not affected.
      */
-    public function __construct(ItemListInterface $itemList)
+    public function __construct(ItemListInterface $itemList, ?Randomizer $randomizer = null)
     {
+        $this->randomizer = $randomizer ?? new Randomizer(new Xoshiro256StarStar());
         $this->dimensions = $itemList->getDimensionCount();
         $this->items = $itemList->getItems();
         $this->length = count($this->items);
@@ -54,6 +65,7 @@ class KDTree implements KDTreeInterface
         $this->buildTree();
 
         $this->items = null;
+        $this->randomizer = null;
     }
 
     /**
@@ -166,7 +178,7 @@ class KDTree implements KDTreeInterface
         // Random pivot: with a fixed first-element pivot quickselect degrades to
         // O(n^2) on sorted input, and on any range left partially ordered by a
         // previous partition (e.g. points whose coordinates are correlated).
-        $this->exch($lo, mt_rand($lo, $hi));
+        $this->exch($lo, $this->randomizer->getInt($lo, $hi));
 
         $i = $lo;
         $j = $hi + 1;

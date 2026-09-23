@@ -11,6 +11,10 @@ use Hexogen\KDTree\Interfaces\TreePersisterInterface;
 /**
  * Writes a KD tree to a binary file readable by FSKDTree.
  * See FSKDTree for the file format description.
+ *
+ * The tree is written to a temporary file in the same directory which is then
+ * renamed over the target, so readers never see a half-written file and an
+ * FSKDTree that already has the old file open keeps reading the old data.
  */
 class FSTreePersister implements TreePersisterInterface
 {
@@ -23,6 +27,11 @@ class FSTreePersister implements TreePersisterInterface
      * @var resource|null file handler
      */
     private $handler;
+
+    /**
+     * @var string|null temporary file being written
+     */
+    private $tempFilename;
 
     /**
      * @var int
@@ -48,7 +57,8 @@ class FSTreePersister implements TreePersisterInterface
      */
     public function convert(KDTreeInterface $tree, string $identifier)
     {
-        $this->openFile($identifier);
+        $filename = $this->path . '/' . $identifier;
+        $this->openTempFile($filename);
 
         try {
             $this->dimensions = $tree->getDimensionCount();
@@ -64,9 +74,18 @@ class FSTreePersister implements TreePersisterInterface
             if ($root) {
                 $this->writeNode($root);
             }
+
+            $this->closeFile();
+            $this->replaceTarget($filename);
+        } catch (\Throwable $e) {
+            if ($this->handler !== null) {
+                @fclose($this->handler);
+                $this->handler = null;
+            }
+            @unlink($this->tempFilename);
+            throw $e;
         } finally {
-            fclose($this->handler);
-            $this->handler = null;
+            $this->tempFilename = null;
         }
     }
 
@@ -106,17 +125,45 @@ class FSTreePersister implements TreePersisterInterface
     }
 
     /**
-     * @param string $identifier
+     * Create a uniquely named temporary file next to the target
+     * @param string $filename target file name
      * @throws FileException
      */
-    private function openFile(string $identifier)
+    private function openTempFile(string $filename)
     {
-        $filename = $this->path . '/' . $identifier;
-        $handler = @fopen($filename, 'wb');
+        $tempFilename = $filename . '.' . bin2hex(random_bytes(6)) . '.tmp';
+        $handler = @fopen($tempFilename, 'xb');
         if ($handler === false) {
-            throw new FileException('Unable to open kd tree file for writing: ' . $filename);
+            throw new FileException('Unable to open kd tree file for writing: ' . $tempFilename);
         }
         $this->handler = $handler;
+        $this->tempFilename = $tempFilename;
+    }
+
+    /**
+     * Flush and close the file, failing loudly if buffered data could not be written
+     * @throws FileException
+     */
+    private function closeFile()
+    {
+        $handler = $this->handler;
+        $this->handler = null;
+        $flushed = fflush($handler);
+        if (!fclose($handler) || !$flushed) {
+            throw new FileException('Unable to write kd tree file: ' . $this->tempFilename);
+        }
+    }
+
+    /**
+     * Atomically move the fully written temporary file over the target
+     * @param string $filename
+     * @throws FileException
+     */
+    private function replaceTarget(string $filename)
+    {
+        if (!@rename($this->tempFilename, $filename)) {
+            throw new FileException('Unable to replace kd tree file: ' . $filename);
+        }
     }
 
     /**
@@ -124,7 +171,7 @@ class FSTreePersister implements TreePersisterInterface
      */
     private function calculateNodeSize()
     {
-        $this->nodeMemorySize = 3 * FSKDTree::INT_LENGTH + $this->dimensions * FSKDTree::FLOAT_LENGTH;
+        $this->nodeMemorySize = FSKDTree::getNodeLength($this->dimensions);
     }
 
     /**

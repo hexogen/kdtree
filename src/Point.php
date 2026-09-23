@@ -11,8 +11,9 @@ class Point implements PointInterface
     private $length;
 
     /**
-     * Item constructor.
+     * Point constructor.
      * @param array $dValues
+     * @throws ValidationException if values are empty, not a list, not numeric or not finite
      */
     public function __construct(array $dValues)
     {
@@ -53,6 +54,10 @@ class Point implements PointInterface
         for ($i = 0; $i < $this->length; $i++) {
             if (!isset($dValues[$i]) || !is_numeric($dValues[$i])) {
                 throw new ValidationException('$dValues is not a simple array list');
+            }
+            if (!is_finite((float)$dValues[$i])) {
+                // NaN breaks the ordering the tree relies on and INF makes distances meaningless
+                throw new ValidationException('$dValues[' . $i . '] should be a finite number');
             }
         }
     }

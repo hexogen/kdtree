@@ -4,6 +4,35 @@ All Notable changes to `hexogen/kdtree` will be documented in this file.
 
 Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) principles.
 
+## v0.3.1 - 2026-09-23
+
+### Fixed
+- `Point`/`Item` accepted `NAN` and `INF` coordinates; a single NaN item could make
+  `NearestSearch` return a wrong nearest neighbour. Non-finite values now throw
+  `ValidationException`.
+- `FSTreePersister` overwrote the target file in place, so an `FSKDTree` that already had
+  it open silently mixed the old header with the new nodes. The tree is now written to a
+  temporary file in the same directory and renamed over the target; on failure the old
+  file is left untouched and the temporary file is removed.
+- Nodes obtained from an `FSKDTree` stopped working (raw `TypeError`) once the tree
+  object was released. The file handle now stays open while any node references it.
+- `KDTree` used `mt_rand()` for pivots, changing the caller's `mt_srand()` sequence.
+  It now uses a private `Random\Randomizer`.
+
+### Added
+- `FSKDTree` constructor argument `$cacheDepth` to bound memory: only the given number of
+  levels below the root stay cached (default `null` keeps the previous cache-everything
+  behaviour).
+- `KDTree` constructor argument `$randomizer` for a reproducible tree shape.
+- `FSKDTree` validates on open that the file size matches the item count in the header,
+  so truncated files fail immediately instead of on the first search that reaches them.
+- `FSKDTree::getNodeLength()`.
+
+### Changed
+- `NearestSearch::search()` throws `ValidationException` for a negative `$resultLength`
+  (it silently returned an empty array).
+- Distance computation uses multiplication instead of `pow()`.
+
 ## v0.3.0 - 2026-09-23
 
 ### Fixed

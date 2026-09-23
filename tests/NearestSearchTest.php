@@ -2,6 +2,7 @@
 
 namespace Hexogen\KDTree\Tests;
 
+use Hexogen\KDTree\Exception\ValidationException;
 use Hexogen\KDTree\Interfaces\ItemInterface;
 use Hexogen\KDTree\Item;
 use Hexogen\KDTree\ItemList;
@@ -257,5 +258,26 @@ class NearestSearchTest extends TestCase
             }
             $this->assertEquals($checkResult[$k++], $distance);
         }
+    }
+
+    #[Test]
+    public function itShouldRejectNegativeResultLength()
+    {
+        $itemList = new ItemList(2);
+        $itemList->addItem(new Item(1, [2., 3.]));
+        $searcher = new NearestSearch(new KDTree($itemList));
+
+        $this->expectException(ValidationException::class);
+        $searcher->search(new Point([0, 0]), -1);
+    }
+
+    #[Test]
+    public function itShouldReturnNothingForZeroResultLength()
+    {
+        $itemList = new ItemList(2);
+        $itemList->addItem(new Item(1, [2., 3.]));
+        $searcher = new NearestSearch(new KDTree($itemList));
+
+        $this->assertSame([], $searcher->search(new Point([0, 0]), 0));
     }
 }

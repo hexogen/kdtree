@@ -4,6 +4,7 @@ namespace Hexogen\KDTree\Tests;
 
 use Hexogen\KDTree\Exception\ValidationException;
 use Hexogen\KDTree\Item;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
@@ -77,5 +78,22 @@ class ItemTest extends TestCase
         $this->assertEquals(2, $item->getDimensionsCount());
         $item = new Item(11, [0.1, 1.1, 2.1, 3.1, 1.1]);
         $this->assertEquals(5, $item->getDimensionsCount());
+    }
+
+    /**
+     * @param mixed $value
+     */
+    #[Test]
+    #[DataProvider('nonFiniteProvider')]
+    public function itShouldRejectNonFiniteCoordinates($value)
+    {
+        $this->expectException(ValidationException::class);
+        $this->expectExceptionMessage('finite');
+        new Item(1, [0.5, $value]);
+    }
+
+    public static function nonFiniteProvider(): array
+    {
+        return [[NAN], [INF], [-INF], ['1e999']];
     }
 }

@@ -11,6 +11,14 @@ use Hexogen\KDTree\Interfaces\NodeInterface;
  * File system backed KD tree. Nodes are lazily read from a binary file
  * produced by FSTreePersister.
  *
+ * Read nodes are kept in memory so repeated searches don't hit the disk again.
+ * By default every node that was ever read stays cached, so a long-lived tree
+ * can grow to hold the whole file as objects; pass $cacheDepth to keep only the
+ * top levels cached (memory is then bounded by 2^($cacheDepth + 1) nodes).
+ *
+ * The file handle stays open as long as the tree or any node obtained from it
+ * is referenced.
+ *
  * Binary format (version 1, all integers and floats little-endian):
  *
  *   magic          3 bytes   "KDT"
@@ -96,14 +104,26 @@ class FSKDTree implements KDTreeInterface
     private $factory;
 
     /**
+     * @var int|null number of tree levels below the root whose nodes stay cached, null for all
+     */
+    private $cacheDepth;
+
+    /**
      * FSKDTree constructor.
      * @param string $path path to a file produced by FSTreePersister
      * @param ItemFactoryInterface $factory
+     * @param int|null $cacheDepth how many levels below the root keep read nodes in memory:
+     *        null (default) caches every node read, 0 caches nothing but the root
      * @throws FileException if the file cannot be opened or has an unsupported format
+     * @throws \InvalidArgumentException if $cacheDepth is negative
      */
-    public function __construct(string $path, ItemFactoryInterface $factory)
+    public function __construct(string $path, ItemFactoryInterface $factory, ?int $cacheDepth = null)
     {
+        if ($cacheDepth !== null && $cacheDepth < 0) {
+            throw new \InvalidArgumentException('$cacheDepth should not be negative');
+        }
         $this->factory = $factory;
+        $this->cacheDepth = $cacheDepth;
 
         $handler = @fopen($path, 'rb');
         if ($handler === false) {
@@ -117,16 +137,6 @@ class FSKDTree implements KDTreeInterface
             fclose($this->handler);
             $this->handler = null;
             throw $e;
-        }
-    }
-
-    /**
-     *  FSKDTree destructor
-     */
-    public function __destruct()
-    {
-        if (is_resource($this->handler)) {
-            fclose($this->handler);
         }
     }
 
@@ -181,7 +191,39 @@ class FSKDTree implements KDTreeInterface
         $this->readItemsCount();
         $this->maxBoundary = $this->readPoint();
         $this->minBoundary = $this->readPoint();
+        $this->validateFileSize();
         $this->setRoot();
+    }
+
+    /**
+     * Get size in bytes of a single node in the file
+     * @param int $dimensions
+     * @return int
+     */
+    public static function getNodeLength(int $dimensions): int
+    {
+        return 3 * self::INT_LENGTH + $dimensions * self::FLOAT_LENGTH;
+    }
+
+    /**
+     * Check that the file holds exactly the number of nodes declared in the header
+     * @throws FileException
+     */
+    private function validateFileSize()
+    {
+        $stat = @fstat($this->handler);
+        if ($stat === false) {
+            return; // stream does not report its size, nodes are still validated on read
+        }
+        $nodesLength = $stat['size'] - ftell($this->handler);
+        $nodeLength = self::getNodeLength($this->dimensions);
+
+        if ($nodesLength % $nodeLength !== 0 || intdiv($nodesLength, $nodeLength) !== $this->length) {
+            throw new FileException(
+                'Corrupted kd tree file: header declares ' . $this->length . ' items but the file holds '
+                . $nodesLength . ' bytes of node data (' . $nodeLength . ' bytes per node)'
+            );
+        }
     }
 
     /**
@@ -240,7 +282,7 @@ class FSKDTree implements KDTreeInterface
             return;
         }
         $position = ftell($this->handler);
-        $this->root = new FSNode($this->factory, $this->handler, $position, $this->dimensions);
+        $this->root = new FSNode($this->factory, $this->handler, $position, $this->dimensions, $this->cacheDepth);
     }
 
     /**

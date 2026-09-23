@@ -3,11 +3,14 @@
 namespace Hexogen\KDTree\Tests;
 
 use Hexogen\KDTree\Exception\ValidationException;
+use Hexogen\KDTree\Interfaces\NodeInterface;
 use Hexogen\KDTree\Item;
 use Hexogen\KDTree\ItemList;
 use Hexogen\KDTree\KDTree;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
+use Random\Engine\Xoshiro256StarStar;
+use Random\Randomizer;
 
 class KDTreeTest extends TreeTestCase
 {
@@ -192,5 +195,44 @@ class KDTreeTest extends TreeTestCase
         }
 
         return $lists;
+    }
+
+    #[Test]
+    public function itShouldBuildTheSameTreeForTheSameSeed()
+    {
+        $itemList = self::getRandomItemsList(200, 3);
+
+        $first = new KDTree($itemList, new Randomizer(new Xoshiro256StarStar(42)));
+        $second = new KDTree($itemList, new Randomizer(new Xoshiro256StarStar(42)));
+
+        $this->assertSame($this->collectIds($first->getRoot()), $this->collectIds($second->getRoot()));
+    }
+
+    #[Test]
+    public function itShouldNotTouchGlobalRandomState()
+    {
+        $itemList = self::getRandomItemsList(200, 2);
+
+        mt_srand(123);
+        $expected = mt_rand();
+
+        mt_srand(123);
+        new KDTree($itemList);
+        $this->assertSame($expected, mt_rand());
+    }
+
+    /**
+     * @return int[] ids in pre-order
+     */
+    private function collectIds(?NodeInterface $node): array
+    {
+        if ($node === null) {
+            return [];
+        }
+        return array_merge(
+            [$node->getItem()->getId()],
+            $this->collectIds($node->getLeft()),
+            $this->collectIds($node->getRight())
+        );
     }
 }

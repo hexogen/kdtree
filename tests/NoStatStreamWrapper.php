@@ -3,14 +3,12 @@
 namespace Hexogen\KDTree\Tests;
 
 /**
- * Stream wrapper whose writes fail, to simulate a full disk.
- * Register with FailingStreamWrapper::register() and open "failing://anything":
- * every write fails. Open "failing://flush/anything" instead to accept writes
- * but fail when the stream is flushed.
+ * Read-only stream wrapper that serves a file but cannot report its size (no stream_stat),
+ * like some remote or custom streams. Open "nostat:///absolute/path".
  */
-class FailingStreamWrapper
+class NoStatStreamWrapper
 {
-    const PROTOCOL = 'failing';
+    const PROTOCOL = 'nostat';
 
     /**
      * @var resource|null set by PHP when a context is passed to fopen()
@@ -18,9 +16,9 @@ class FailingStreamWrapper
     public $context;
 
     /**
-     * @var bool true if writes succeed and only flushing fails
+     * @var resource underlying file
      */
-    private $failOnFlush = false;
+    private $handler;
 
     public static function register(): void
     {
@@ -40,27 +38,37 @@ class FailingStreamWrapper
 
     public function stream_open(string $path, string $mode, int $options, ?string &$openedPath): bool
     {
-        $this->failOnFlush = strpos($path, self::PROTOCOL . '://flush/') === 0;
+        $handler = fopen(substr($path, strlen(self::PROTOCOL . '://')), 'rb');
+        if ($handler === false) {
+            return false;
+        }
+        $this->handler = $handler;
         return true;
     }
 
-    public function stream_write(string $data): int
+    public function stream_read(int $count): string|false
     {
-        return $this->failOnFlush ? strlen($data) : 0;
+        return fread($this->handler, $count);
     }
 
-    public function stream_flush(): bool
+    public function stream_seek(int $offset, int $whence): bool
     {
-        return !$this->failOnFlush;
+        return fseek($this->handler, $offset, $whence) === 0;
+    }
+
+    public function stream_tell(): int
+    {
+        return ftell($this->handler);
     }
 
     public function stream_eof(): bool
     {
-        return true;
+        return feof($this->handler);
     }
 
     public function stream_close(): void
     {
+        fclose($this->handler);
     }
 
     // phpcs:enable
