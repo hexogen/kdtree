@@ -2,20 +2,25 @@
 
 namespace Hexogen\KDTree;
 
+use Hexogen\KDTree\Exception\FileException;
 use Hexogen\KDTree\Interfaces\ItemInterface;
 use Hexogen\KDTree\Interfaces\KDTreeInterface;
 use Hexogen\KDTree\Interfaces\NodeInterface;
 use Hexogen\KDTree\Interfaces\TreePersisterInterface;
 
+/**
+ * Writes a KD tree to a binary file readable by FSKDTree.
+ * See FSKDTree for the file format description.
+ */
 class FSTreePersister implements TreePersisterInterface
 {
     /**
-     * @var string path to the file
+     * @var string path to the directory
      */
     private $path;
 
     /**
-     * @var resource file handler
+     * @var resource|null file handler
      */
     private $handler;
 
@@ -37,32 +42,32 @@ class FSTreePersister implements TreePersisterInterface
     /**
      * @api
      * @param KDTreeInterface $tree
-     * @param string $identifier that identifies persisted tree(may be a filename, database name etc.)
-     * @return mixed
+     * @param string $identifier file name inside the directory given to the constructor
+     * @return void
+     * @throws FileException if the file cannot be created or written
      */
     public function convert(KDTreeInterface $tree, string $identifier)
     {
-        $this->initTree($identifier);
+        $this->openFile($identifier);
 
-        $this->dimensions = $tree->getDimensionCount();
+        try {
+            $this->dimensions = $tree->getDimensionCount();
+            $this->calculateNodeSize();
 
-        $this->calculateNodeSize();
+            $this->writeHeader();
+            $this->writeNumberOfDimensions();
+            $this->writeNumberOfItems($tree);
+            $this->writeCoordinate($tree->getMaxBoundary());
+            $this->writeCoordinate($tree->getMinBoundary());
 
-        $this->specifyNumberOfDimensions();
-
-        $this->specifyNumberOfItems($tree);
-
-        $upperBound = $tree->getMaxBoundary();
-        $this->writeCoordinate($upperBound);
-
-        $lowerBound = $tree->getMinBoundary();
-        $this->writeCoordinate($lowerBound);
-
-        $root  = $tree->getRoot();
-        if ($root) {
-            $this->writeNode($root);
+            $root = $tree->getRoot();
+            if ($root) {
+                $this->writeNode($root);
+            }
+        } finally {
+            fclose($this->handler);
+            $this->handler = null;
         }
-        fclose($this->handler);
     }
 
     /**
@@ -73,29 +78,19 @@ class FSTreePersister implements TreePersisterInterface
         $position = ftell($this->handler);
         $item = $node->getItem();
 
-        $this->writeItemId($item);
-
-        $dataChunk = pack('V', 0); // left position currently unknown so it equal 0/null
-        fwrite($this->handler, $dataChunk);
-
         $rightNode = $node->getRight();
+        $rightPosition = $rightNode ? $position + $this->nodeMemorySize : 0;
 
-        $rightPosition = 0;
-        if ($rightNode) {
-            $rightPosition = $position + $this->nodeMemorySize;
-        }
-        $dataChunk = pack('V', $rightPosition);
-        fwrite($this->handler, $dataChunk);
-
-        $this->saveItemCoordinate($item);
+        // item id, left position (unknown yet, patched in persistLeftLink), right position
+        $this->write(pack('PPP', $item->getId(), 0, $rightPosition));
+        $this->writeItemCoordinate($item);
 
         if ($rightNode) {
             $this->writeNode($rightNode);
         }
 
         $leftNode = $node->getLeft();
-
-        if ($leftNode == null) {
+        if ($leftNode === null) {
             return;
         }
         $this->persistLeftLink($position);
@@ -107,16 +102,21 @@ class FSTreePersister implements TreePersisterInterface
      */
     private function writeCoordinate(array $coordinate)
     {
-        $dataChunk = pack('d'.$this->dimensions, ...$coordinate);
-        fwrite($this->handler, $dataChunk);
+        $this->write(pack('e' . $this->dimensions, ...$coordinate));
     }
 
     /**
      * @param string $identifier
+     * @throws FileException
      */
-    private function initTree(string $identifier)
+    private function openFile(string $identifier)
     {
-        $this->handler = fopen($this->path . '/' . $identifier, 'wb');
+        $filename = $this->path . '/' . $identifier;
+        $handler = @fopen($filename, 'wb');
+        if ($handler === false) {
+            throw new FileException('Unable to open kd tree file for writing: ' . $filename);
+        }
+        $this->handler = $handler;
     }
 
     /**
@@ -128,28 +128,33 @@ class FSTreePersister implements TreePersisterInterface
     }
 
     /**
-     * Specify number of dimensions according to file format
+     * Write file signature and format version
      */
-    private function specifyNumberOfDimensions()
+    private function writeHeader()
     {
-        $dataChunk = pack('V', $this->dimensions);
-        fwrite($this->handler, $dataChunk);
+        $this->write(FSKDTree::MAGIC . chr(FSKDTree::FORMAT_VERSION));
+    }
+
+    /**
+     * Write number of dimensions according to file format
+     */
+    private function writeNumberOfDimensions()
+    {
+        $this->write(pack('V', $this->dimensions));
     }
 
     /**
      * @param KDTreeInterface $tree
      */
-    private function specifyNumberOfItems(KDTreeInterface $tree)
+    private function writeNumberOfItems(KDTreeInterface $tree)
     {
-        $itemCount = $tree->getItemCount();
-        $dataChunk = pack('V', $itemCount);
-        fwrite($this->handler, $dataChunk);
+        $this->write(pack('P', $tree->getItemCount()));
     }
 
     /**
-     * @param $item
+     * @param ItemInterface $item
      */
-    private function saveItemCoordinate(ItemInterface $item)
+    private function writeItemCoordinate(ItemInterface $item)
     {
         $coordinate = [];
         for ($i = 0; $i < $this->dimensions; $i++) {
@@ -159,25 +164,27 @@ class FSTreePersister implements TreePersisterInterface
     }
 
     /**
-     * Persist current position before writing left node
+     * Persist current position as the left link of the node written at $position
      * @param int $position
      */
     private function persistLeftLink(int $position)
     {
         $leftPosition = ftell($this->handler);
         fseek($this->handler, $position + FSKDTree::INT_LENGTH);
-        $dataChunk = pack('V', $leftPosition);
-        fwrite($this->handler, $dataChunk);
+        $this->write(pack('P', $leftPosition));
         fseek($this->handler, $leftPosition);
     }
 
     /**
-     * @param $item
+     * Write a chunk to the file, failing loudly on short writes
+     * @param string $dataChunk
+     * @throws FileException
      */
-    private function writeItemId(ItemInterface $item)
+    private function write(string $dataChunk)
     {
-        $itemId = $item->getId();
-        $dataChunk = pack('V', $itemId);
-        fwrite($this->handler, $dataChunk);
+        $written = fwrite($this->handler, $dataChunk);
+        if ($written === false || $written !== strlen($dataChunk)) {
+            throw new FileException('Unable to write kd tree file (disk full or file not writable?)');
+        }
     }
 }

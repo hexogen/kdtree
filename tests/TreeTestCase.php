@@ -67,7 +67,7 @@ abstract class TreeTestCase extends TestCase
             $this->checkLeftBranch($left, $value, $d);
         }
         $right = $node->getRight();
-        if ($left) {
+        if ($right) {
             $this->checkLeftBranch($right, $value, $d);
         }
     }
@@ -88,7 +88,7 @@ abstract class TreeTestCase extends TestCase
             $this->checkRightBranch($left, $value, $d);
         }
         $right = $node->getRight();
-        if ($left) {
+        if ($right) {
             $this->checkRightBranch($right, $value, $d);
         }
     }
@@ -108,7 +108,7 @@ abstract class TreeTestCase extends TestCase
         }
 
         $right = $node->getRight();
-        if ($left) {
+        if ($right) {
             $this->checkRightBranch($right, $value, $d);
             $this->checkNode($right, $nextD);
         }

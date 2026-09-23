@@ -2,10 +2,11 @@
 
 namespace Hexogen\KDTree\Tests;
 
+use Hexogen\KDTree\FSKDTree;
 use Hexogen\KDTree\FSNode;
 use Hexogen\KDTree\Interfaces\ItemInterface;
 use Hexogen\KDTree\ItemFactory;
-use \Mockery as m;
+use PHPUnit\Framework\Attributes\Test;
 
 class FSNodeTest extends TreeTestCase
 {
@@ -23,7 +24,11 @@ class FSNodeTest extends TreeTestCase
     {
         $this->handler = fopen(__DIR__ . '/fixture/fs/tree100x10.bin', 'rb');
         $factory = new ItemFactory();
-        $this->root = new FSNode($factory, $this->handler, 168, 10);
+        $rootPosition = FSKDTree::HEADER_LENGTH
+            + FSKDTree::DIMENSIONS_LENGTH
+            + FSKDTree::INT_LENGTH
+            + 2 * 10 * FSKDTree::FLOAT_LENGTH;
+        $this->root = new FSNode($factory, $this->handler, $rootPosition, 10);
     }
 
     public function tearDown(): void
@@ -32,16 +37,14 @@ class FSNodeTest extends TreeTestCase
     }
 
     /**
-     * @test
      */
+    #[Test]
     public function itShouldCreateAnInstance()
     {
         $this->assertInstanceOf(FSNode::class, $this->root);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function itShouldGetLeftNode()
     {
         $left = $this->root->getLeft();
@@ -50,9 +53,7 @@ class FSNodeTest extends TreeTestCase
     }
 
 
-    /**
-     * @test
-     */
+    #[Test]
     public function itShouldGetRightNode()
     {
         $right = $this->root->getRight();
@@ -60,9 +61,7 @@ class FSNodeTest extends TreeTestCase
         $this->assertInstanceOf(FSNode::class, $right);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function itShouldGetAnItem()
     {
         $item = $this->root->getItem();

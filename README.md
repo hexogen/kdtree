@@ -68,6 +68,12 @@ $persister->convert($tree, 'treeName.bin');
 
 ```
 
+The file format is versioned (see `FSKDTree` for the layout). Files written by
+versions before 0.3.0 have no header and cannot be read anymore: re-create them
+with `FSTreePersister`. `FSKDTree` and `FSTreePersister` throw
+`Hexogen\KDTree\Exception\FileException` when a file cannot be opened, is
+truncated, or has an unsupported format.
+
 ### File system version of the tree
 
 ``` php
@@ -100,7 +106,7 @@ $ composer test
 
 ## Contributing
 
-Please see [CONTRIBUTING](.github/CONTRIBUTING.md) and [CONDUCT](CONDUCT.md) for details.
+Please see [CONTRIBUTING](.github/CONTRIBUTING.md) and [CONDUCT](.github/CODE_OF_CONDUCT.md) for details.
 
 ## Security
 

@@ -5,6 +5,7 @@ namespace Hexogen\KDTree\Tests;
 use Hexogen\KDTree\Item;
 use Hexogen\KDTree\Node;
 use \Mockery as m;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 class NodeTest extends TestCase
@@ -26,16 +27,14 @@ class NodeTest extends TestCase
     }
 
     /**
-     * @test
      */
+    #[Test]
     public function itShouldCreateAnInstance()
     {
         $this->assertInstanceOf(Node::class, $this->instance);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function itShouldGetAndSetLeftNode()
     {
         $itemMock = m::mock(Item::class);
@@ -47,9 +46,7 @@ class NodeTest extends TestCase
     }
 
 
-    /**
-     * @test
-     */
+    #[Test]
     public function itShouldGetAndSetRightNode()
     {
         $itemMock = m::mock(Item::class);
@@ -60,9 +57,7 @@ class NodeTest extends TestCase
         $this->assertSame($right, $this->instance->getRight());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function itShouldGetAnItem()
     {
         $itemMock = m::mock(Item::class);

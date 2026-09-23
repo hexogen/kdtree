@@ -6,14 +6,15 @@ use Hexogen\KDTree\Exception\ValidationException;
 use Hexogen\KDTree\Item;
 use Hexogen\KDTree\ItemList;
 use Hexogen\KDTree\KDTree;
-use \Mockery as m;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 
 class KDTreeTest extends TreeTestCase
 {
     /**
-     * @test
      * @throws ValidationException
      */
+    #[Test]
     public function itShouldCreateAnInstance()
     {
         $itemList = new ItemList(5);
@@ -23,9 +24,9 @@ class KDTreeTest extends TreeTestCase
     }
 
     /**
-     * @test
      * @throws ValidationException
      */
+    #[Test]
     public function itShouldGetRoot()
     {
         $itemList = new ItemList(2);
@@ -37,9 +38,9 @@ class KDTreeTest extends TreeTestCase
     }
 
     /**
-     * @test
      * @throws ValidationException
      */
+    #[Test]
     public function itShouldGetNullRoot()
     {
         $itemList = new ItemList(5);
@@ -49,10 +50,10 @@ class KDTreeTest extends TreeTestCase
     }
 
     /**
-     * @test
-     * @dataProvider itemProvider
      * @param ItemList $itemList
      */
+    #[Test]
+    #[DataProvider('itemProvider')]
     public function itShouldCreateTree(ItemList $itemList)
     {
         $tree = new KDTree($itemList);
@@ -60,9 +61,7 @@ class KDTreeTest extends TreeTestCase
         $this->checkTree($tree);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function itShouldGetNumberOfDimensionsInItems()
     {
         $tree = new KDTree(self::getRandomItemsList(10, 1));
@@ -71,9 +70,7 @@ class KDTreeTest extends TreeTestCase
         $this->assertEquals(5, $tree->getDimensionCount());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function itShouldGetNumberOfItemsInTheTree()
     {
         $tree = new KDTree(self::getRandomItemsList(0));
@@ -82,9 +79,7 @@ class KDTreeTest extends TreeTestCase
         $this->assertEquals(10, $tree->getItemCount());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function itShouldGetMinBoundary()
     {
         $tree = new KDTree(self::getRandomItemsList(0));
@@ -101,9 +96,7 @@ class KDTreeTest extends TreeTestCase
         $this->assertEquals(2.0, $tree->getMinBoundary()[1]);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function itShouldGetMaxBoundary()
     {
         $tree = new KDTree(self::getRandomItemsList(0));
@@ -118,6 +111,24 @@ class KDTreeTest extends TreeTestCase
         ]));
         $this->assertEquals(3.2, $tree->getMaxBoundary()[0]);
         $this->assertEquals(2.4, $tree->getMaxBoundary()[1]);
+    }
+
+    #[Test]
+    public function itShouldBuildSortedInputInReasonableTime()
+    {
+        // first-element pivot quickselect is O(n^2) on sorted input (~3s for 10k
+        // items); with the shuffle in the constructor it should stay well under a second
+        $itemList = new ItemList(2);
+        for ($i = 0; $i < 10000; $i++) {
+            $itemList->addItem(new Item($i, [$i, $i]));
+        }
+
+        $start = microtime(true);
+        $tree = new KDTree($itemList);
+        $elapsed = microtime(true) - $start;
+
+        $this->checkTree($tree);
+        $this->assertLessThan(1.0, $elapsed, 'building a tree from sorted input took ' . round($elapsed, 2) . 's');
     }
 
     /**
@@ -171,9 +182,7 @@ class KDTreeTest extends TreeTestCase
         $lists[] = $params;
 
         for ($i = 1; $i < 6; $i++) {
-            $list = self::getRandomItemsList(100, $i);
-            $params[] = $list;
-            $lists[] = $params;
+            $lists[] = [self::getRandomItemsList(100, $i)];
         }
 
         return $lists;

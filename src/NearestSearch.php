@@ -408,7 +408,23 @@ class NearestSearch extends SearchAbstract
         );
     }
 
-    public function prioritySearch(
+    /**
+     * Search the nearer branch first, then the other one only if it can still
+     * contain an item closer than the current worst queued distance
+     *
+     * @param NodeInterface $firstNode
+     * @param NodeInterface $secondNode
+     * @param array $firstUpperBound
+     * @param array $firstLowerBound
+     * @param array $secondUpperBound
+     * @param array $secondLowerBound
+     * @param array $firstOrthogonalDistances
+     * @param array $secondOrthogonalDistances
+     * @param float $firstPossibleDistance
+     * @param float $secondPossibleDistance
+     * @param int $nextDimension
+     */
+    private function prioritySearch(
         NodeInterface $firstNode,
         NodeInterface $secondNode,
         array $firstUpperBound,

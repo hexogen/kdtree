@@ -5,6 +5,7 @@ namespace Hexogen\KDTree\Tests;
 use Hexogen\KDTree\Exception\ValidationException;
 use Hexogen\KDTree\Item;
 use Hexogen\KDTree\ItemList;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 class ItemListTest extends TestCase
@@ -21,8 +22,8 @@ class ItemListTest extends TestCase
     }
 
     /**
-     * @test
      */
+    #[Test]
     public function itShouldNotCreateAnInstance()
     {
         try {
@@ -33,9 +34,7 @@ class ItemListTest extends TestCase
         }
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function itShouldGetDimensionNumber()
     {
         $itemList = new ItemList(1);
@@ -48,9 +47,7 @@ class ItemListTest extends TestCase
         $this->assertEquals(7, $itemList->getDimensionCount());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function itShouldAddItemToTheList()
     {
         $item = new Item(1, [1.2, 2.3]);
@@ -73,9 +70,7 @@ class ItemListTest extends TestCase
         $this->assertEquals(3, $items[2]->getId());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function itShouldNotAddItemToTheList()
     {
         try {

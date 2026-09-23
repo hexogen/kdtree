@@ -1,8 +1,8 @@
 <?php
 
-
 namespace Hexogen\KDTree;
 
+use Hexogen\KDTree\Exception\FileException;
 use Hexogen\KDTree\Interfaces\ItemFactoryInterface;
 use Hexogen\KDTree\Interfaces\ItemInterface;
 use Hexogen\KDTree\Interfaces\NodeInterface;
@@ -10,7 +10,7 @@ use Hexogen\KDTree\Interfaces\NodeInterface;
 class FSNode implements NodeInterface
 {
     /**
-     * @var ItemInterface item that belongs to the node
+     * @var ItemInterface|null item that belongs to the node, null until read from the file
      */
     private $item;
 
@@ -20,7 +20,7 @@ class FSNode implements NodeInterface
     private $left;
 
     /**
-     * @var int left node offset in file
+     * @var int|null left node offset in file, null until read, 0 if there is no left node
      */
     private $leftPosition;
 
@@ -30,7 +30,7 @@ class FSNode implements NodeInterface
     private $right;
 
     /**
-     * @var int right node offset in the file
+     * @var int|null right node offset in the file, null until read, 0 if there is no right node
      */
     private $rightPosition;
 
@@ -66,6 +66,8 @@ class FSNode implements NodeInterface
         $this->item = null;
         $this->left = null;
         $this->right = null;
+        $this->leftPosition = null;
+        $this->rightPosition = null;
         $this->handler = $handler;
         $this->position = $position;
         $this->factory = $factory;
@@ -77,7 +79,7 @@ class FSNode implements NodeInterface
      */
     public function getItem() : ItemInterface
     {
-        if ($this->item == null) {
+        if ($this->item === null) {
             $this->readNode();
         }
         return $this->item;
@@ -109,8 +111,7 @@ class FSNode implements NodeInterface
             $this->readNode();
         }
         if ($this->right === null && $this->rightPosition !== 0) {
-            $rightNode = new FSNode($this->factory, $this->handler, $this->rightPosition, $this->dimensions);
-            $this->setRight($rightNode);
+            $this->right = $this->makeChild($this->rightPosition);
         }
         return $this->right;
     }
@@ -125,33 +126,43 @@ class FSNode implements NodeInterface
             $this->readNode();
         }
         if ($this->left === null && $this->leftPosition !== 0) {
-            $leftNode = new FSNode($this->factory, $this->handler, $this->leftPosition, $this->dimensions);
-            $this->setLeft($leftNode);
+            $this->left = $this->makeChild($this->leftPosition);
         }
         return $this->left;
     }
 
     /**
-     * Read node data from the file
+     * @param int $position child node offset in the file
+     * @return FSNode
+     */
+    private function makeChild(int $position): FSNode
+    {
+        return new FSNode($this->factory, $this->handler, $position, $this->dimensions);
+    }
+
+    /**
+     * Read node data from the file in a single read
+     * @throws FileException
      */
     private function readNode()
     {
+        $nodeLength = 3 * FSKDTree::INT_LENGTH + FSKDTree::FLOAT_LENGTH * $this->dimensions;
+
         fseek($this->handler, $this->position);
-        $dataLength = FSKDTree::FLOAT_LENGTH * $this->dimensions;
+        $binData = fread($this->handler, $nodeLength);
 
-        $binData = fread($this->handler, FSKDTree::INT_LENGTH);
-        $itemId = unpack('V', $binData)[1];
+        if ($binData === false || strlen($binData) !== $nodeLength) {
+            throw new FileException('Corrupted kd tree file: unable to read node at offset ' . $this->position);
+        }
 
-        $binData = fread($this->handler, FSKDTree::INT_LENGTH);
-        $this->leftPosition = unpack('V', $binData)[1];
+        $links = unpack('Pid/Pleft/Pright', $binData);
+        $this->leftPosition = $links['left'];
+        $this->rightPosition = $links['right'];
 
-        $binData = fread($this->handler, FSKDTree::INT_LENGTH);
-        $this->rightPosition = unpack('V', $binData)[1];
+        // unpack() names a single value "v" but several "v1", "v2", ... so read the
+        // coordinates unnamed and normalise the keys with array_values()
+        $dValues = array_values(unpack('e' . $this->dimensions, $binData, 3 * FSKDTree::INT_LENGTH));
 
-        $binData = fread($this->handler, $dataLength);
-        $dValues = unpack('d'.$this->dimensions, $binData);
-        $dValues = array_values($dValues);
-
-        $this->item = $this->factory->make($itemId, $dValues);
+        $this->item = $this->factory->make($links['id'], $dValues);
     }
 }

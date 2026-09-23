@@ -9,9 +9,8 @@ use Hexogen\KDTree\KDTree;
 use Hexogen\KDTree\NearestSearch;
 use Hexogen\KDTree\Node;
 use Hexogen\KDTree\Point;
-use League\Csv\Reader;
-use League\Csv\Statement;
-use \Mockery as m;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 class NearestSearchTest extends TestCase
@@ -22,10 +21,10 @@ class NearestSearchTest extends TestCase
     private $items;
 
     /**
-     * @dataProvider pointsProvider
-     * @test
      * @param string $filename
      */
+    #[DataProvider('pointsProvider')]
+    #[Test]
     public function itShouldFindNearestPointsInDataSet(string $filename)
     {
         $itemList = $this->getItemList($filename);
@@ -116,9 +115,7 @@ class NearestSearchTest extends TestCase
     }
 
 
-    /**
-     * @test
-     */
+    #[Test]
     public function itShouldNotValidatePoint()
     {
         $this->expectException(\Hexogen\KDTree\Exception\ValidationException::class);
@@ -131,9 +128,7 @@ class NearestSearchTest extends TestCase
         $result = $searcher->search(new Point($dValues), 10);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function itShouldReturnEmptyArrayIfTreeIsEmpty()
     {
         $itemList = new ItemList(2);
@@ -147,9 +142,7 @@ class NearestSearchTest extends TestCase
         $this->assertCount(0, $result);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function resultShouldNotBeLongerThanTree()
     {
         $itemList = new ItemList(2);
@@ -163,8 +156,8 @@ class NearestSearchTest extends TestCase
 
     /**
      * test search with tree modification
-     * @test
      */
+    #[Test]
     public function itShouldCheckLeftNode()
     {
         $itemList = new ItemList(2);
@@ -203,16 +196,13 @@ class NearestSearchTest extends TestCase
      */
     private function getItemList(string $name, int $dimensions = 2) : ItemList
     {
-        $reader = Reader::createFromPath(__DIR__ . '/fixture/' . $dimensions . 'd/' . $name);
-        $reader->setDelimiter(' ');
+        $path = __DIR__ . '/fixture/' . $dimensions . 'd/' . $name;
+        $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
         $itemList = new ItemList($dimensions);
 
-        $stmt = Statement::create();
-        $points =  $stmt->process($reader);
-
-
         $i = 0;
-        foreach ($points as $point) {
+        foreach ($lines as $line) {
+            $point = preg_split('/\s+/', trim($line));
             $dValues = [];
             for ($j = 0; $j < $dimensions; $j++) {
                 $dValues[$j] = $point[$j];
