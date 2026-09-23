@@ -51,11 +51,6 @@ class KDTree implements KDTreeInterface
 
         $this->setBoundaries($this->items);
 
-        // Quickselect pivots on the first element of each range, which degrades
-        // to O(n^2) on sorted (or reverse-sorted) input. A single shuffle makes
-        // the expected build time O(n log n) regardless of input order.
-        shuffle($this->items);
-
         $this->buildTree();
 
         $this->items = null;
@@ -168,6 +163,11 @@ class KDTree implements KDTreeInterface
      */
     private function partition(int $lo, int $hi, int $d)
     {
+        // Random pivot: with a fixed first-element pivot quickselect degrades to
+        // O(n^2) on sorted input, and on any range left partially ordered by a
+        // previous partition (e.g. points whose coordinates are correlated).
+        $this->exch($lo, mt_rand($lo, $hi));
+
         $i = $lo;
         $j = $hi + 1;
         $v = $this->items[$lo];

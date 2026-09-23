@@ -114,21 +114,27 @@ class KDTreeTest extends TreeTestCase
     }
 
     #[Test]
-    public function itShouldBuildSortedInputInReasonableTime()
+    public function itShouldBuildSortedInputInLinearithmicTime()
     {
-        // first-element pivot quickselect is O(n^2) on sorted input (~3s for 10k
-        // items); with the shuffle in the constructor it should stay well under a second
+        // With a fixed first-element pivot, quickselect degrades to O(n^2) on sorted
+        // input: ~7500 coordinate reads per item for 10k items. A random pivot keeps
+        // it around 45 per item, the same as for random input. Count reads instead of
+        // measuring wall-clock time so the test is stable under Xdebug/CI.
+        $n = 10000;
         $itemList = new ItemList(2);
-        for ($i = 0; $i < 10000; $i++) {
-            $itemList->addItem(new Item($i, [$i, $i]));
+        for ($i = 0; $i < $n; $i++) {
+            $itemList->addItem(new CountingItem($i, [$i, $i]));
         }
 
-        $start = microtime(true);
+        CountingItem::$reads = 0;
         $tree = new KDTree($itemList);
-        $elapsed = microtime(true) - $start;
 
         $this->checkTree($tree);
-        $this->assertLessThan(1.0, $elapsed, 'building a tree from sorted input took ' . round($elapsed, 2) . 's');
+        $this->assertLessThan(
+            200 * $n,
+            CountingItem::$reads,
+            'building a tree from sorted input took ' . CountingItem::$reads . ' coordinate reads'
+        );
     }
 
     /**

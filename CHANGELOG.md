@@ -8,7 +8,7 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 
 ### Fixed
 - `KDTree` build time was O(n²) on sorted or reverse-sorted input (first-element pivot
-  in quickselect); items are now shuffled once before building.
+  in quickselect); partition now uses a random pivot.
 - Item ids were silently truncated to unsigned 32-bit by the binary format: negative ids
   and ids above 4294967295 came back corrupted from `FSKDTree`.
 - `FSKDTree` and `FSTreePersister` now throw `FileException` instead of emitting PHP
