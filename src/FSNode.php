@@ -3,14 +3,16 @@
 
 namespace Hexogen\KDTree;
 
+use Hexogen\KDTree\Exception\FileException;
 use Hexogen\KDTree\Interfaces\ItemFactoryInterface;
 use Hexogen\KDTree\Interfaces\ItemInterface;
 use Hexogen\KDTree\Interfaces\NodeInterface;
+use Hexogen\KDTree\Internal\FileReader;
 
 class FSNode implements NodeInterface
 {
     /**
-     * @var ItemInterface item that belongs to the node
+     * @var ItemInterface|null item that belongs to the node, null until it is read from the file
      */
     private $item;
 
@@ -20,7 +22,7 @@ class FSNode implements NodeInterface
     private $left;
 
     /**
-     * @var int left node offset in file
+     * @var int|null left node offset in file, null until it is read, 0 if there is no left node
      */
     private $leftPosition;
 
@@ -30,7 +32,7 @@ class FSNode implements NodeInterface
     private $right;
 
     /**
-     * @var int right node offset in the file
+     * @var int|null right node offset in the file, null until it is read, 0 if there is no right node
      */
     private $rightPosition;
 
@@ -74,6 +76,7 @@ class FSNode implements NodeInterface
 
     /**
      * @return ItemInterface get item from the node
+     * @throws FileException if the node cannot be read from the file
      */
     public function getItem() : ItemInterface
     {
@@ -102,6 +105,7 @@ class FSNode implements NodeInterface
     /**
      * Returns right node if it exists, null otherwise
      * @return NodeInterface|null get right node
+     * @throws FileException if the node cannot be read from the file
      */
     public function getRight(): ?NodeInterface
     {
@@ -118,6 +122,7 @@ class FSNode implements NodeInterface
     /**
      * Returns left node if it exists, null otherwise
      * @return NodeInterface|null left node
+     * @throws FileException if the node cannot be read from the file
      */
     public function getLeft(): ?NodeInterface
     {
@@ -133,25 +138,21 @@ class FSNode implements NodeInterface
 
     /**
      * Read node data from the file
+     * @throws FileException
      */
     private function readNode()
     {
-        fseek($this->handler, $this->position);
+        $linksLength = 3 * FSKDTree::INT_LENGTH;
         $dataLength = FSKDTree::FLOAT_LENGTH * $this->dimensions;
 
-        $binData = fread($this->handler, FSKDTree::INT_LENGTH);
-        $itemId = unpack('V', $binData)[1];
+        $binData = FileReader::read($this->handler, $linksLength + $dataLength, $this->position);
 
-        $binData = fread($this->handler, FSKDTree::INT_LENGTH);
-        $this->leftPosition = unpack('V', $binData)[1];
-
-        $binData = fread($this->handler, FSKDTree::INT_LENGTH);
-        $this->rightPosition = unpack('V', $binData)[1];
-
-        $binData = fread($this->handler, $dataLength);
-        $dValues = unpack('d'.$this->dimensions, $binData);
+        $links = unpack('Vid/Vleft/Vright', $binData);
+        $dValues = unpack('d' . $this->dimensions, substr($binData, $linksLength));
         $dValues = array_values($dValues);
 
-        $this->item = $this->factory->make($itemId, $dValues);
+        $this->leftPosition = $links['left'];
+        $this->rightPosition = $links['right'];
+        $this->item = $this->factory->make($links['id'], $dValues);
     }
 }

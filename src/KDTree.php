@@ -40,20 +40,26 @@ class KDTree implements KDTreeInterface
     private $dimensions;
 
     /**
+     * @var int state of the pivot generator, it is only used while the tree is being built
+     */
+    private $pivotSeed = 1;
+
+    /**
      * KDTree constructor.
      * @param ItemListInterface $itemList
      */
     public function __construct(ItemListInterface $itemList)
     {
         $this->dimensions = $itemList->getDimensionCount();
-        $this->items = $itemList->getItems();
+        // the build addresses items by position, so keys of the given array are dropped
+        $this->items = array_values($itemList->getItems());
         $this->length = count($this->items);
 
         $this->setBoundaries($this->items);
 
         $this->buildTree();
 
-        unset($this->items);
+        $this->items = null;
     }
 
     /**
@@ -163,6 +169,16 @@ class KDTree implements KDTreeInterface
      */
     private function partition(int $lo, int $hi, int $d)
     {
+        // Pseudo-random pivot: with the first element as a pivot quickselect degrades to
+        // O(n^2) on sorted input and on ranges left partially ordered by a previous
+        // partition. A private Lehmer generator (Schrage's method, fits 32-bit integers)
+        // is used, so the tree shape is reproducible and mt_rand()/rand() are not affected.
+        $this->pivotSeed = 16807 * ($this->pivotSeed % 127773) - 2836 * intdiv($this->pivotSeed, 127773);
+        if ($this->pivotSeed <= 0) {
+            $this->pivotSeed += 2147483647;
+        }
+        $this->exch($lo, $lo + $this->pivotSeed % ($hi - $lo + 1));
+
         $i = $lo;
         $j = $hi + 1;
         $v = $this->items[$lo];

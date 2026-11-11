@@ -67,6 +67,12 @@ $persister->convert($tree, 'treeName.bin');
 
 ```
 
+The file is written to a temporary file first and then moved over the target, so trees that
+are already opened from the previous file keep working and a failed write does not damage it.
+
+Item ids are stored as unsigned 32-bit integers: a tree with an id outside of `0..4294967295`
+cannot be persisted.
+
 ### File system version of the tree
 
 ``` php
@@ -87,6 +93,13 @@ echo $result[1]->getId(); // 1
 
 ```
 
+### Errors
+
+- `Hexogen\KDTree\Exception\ValidationException` - a point or an item has no coordinates, has
+  not numeric, `NAN` or infinite coordinates, or has wrong number of dimensions.
+- `Hexogen\KDTree\Exception\FileException` - a tree file cannot be opened, read or written,
+  the file is damaged, or the tree cannot be stored in the file format.
+
 ## Change log
 
 Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
@@ -99,7 +112,7 @@ $ composer test
 
 ## Contributing
 
-Please see [CONTRIBUTING](.github/CONTRIBUTING.md) and [CONDUCT](CONDUCT.md) for details.
+Please see [CONTRIBUTING](.github/CONTRIBUTING.md) and [CONDUCT](.github/CODE_OF_CONDUCT.md) for details.
 
 ## Security
 

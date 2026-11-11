@@ -2,10 +2,11 @@
 
 namespace Hexogen\KDTree\Tests;
 
+use Hexogen\KDTree\Interfaces\ItemInterface;
+use Hexogen\KDTree\Interfaces\ItemListInterface;
 use Hexogen\KDTree\Item;
 use Hexogen\KDTree\ItemList;
 use Hexogen\KDTree\KDTree;
-use \Mockery as m;
 
 class KDTreeTest extends TreeTestCase
 {
@@ -117,6 +118,122 @@ class KDTreeTest extends TreeTestCase
     }
 
     /**
+     * @test
+     */
+    public function itShouldBuildSortedInputInLinearithmicTime()
+    {
+        // With the first element as a pivot quickselect degrades to O(n^2) on sorted input:
+        // about 7500 coordinate reads per item for 10k items. A pseudo-random pivot keeps it
+        // around 45 per item, the same as for random input. Reads are counted instead of
+        // measuring the time to keep the test stable.
+        $n = 10000;
+        $itemList = new ItemList(2);
+        for ($i = 0; $i < $n; $i++) {
+            $itemList->addItem(new CountingItem($i, [$i, $i]));
+        }
+
+        CountingItem::$reads = 0;
+        $tree = new KDTree($itemList);
+
+        $this->checkTree($tree);
+        $this->assertCount($n, $this->getTreeIds($tree->getRoot()));
+        $this->assertLessThan(
+            200 * $n,
+            CountingItem::$reads,
+            'building a tree from sorted input took ' . CountingItem::$reads . ' coordinate reads'
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function itShouldBuildTheSameTreeForTheSameItems()
+    {
+        $itemList = $this->getRandomItemsList(500, 3);
+
+        $first = new KDTree($itemList);
+        $second = new KDTree($itemList);
+
+        $ids = $this->getTreeIds($first->getRoot());
+        $this->assertCount(500, $ids);
+        $this->assertSame($ids, $this->getTreeIds($second->getRoot()));
+    }
+
+    /**
+     * @test
+     */
+    public function itShouldNotAffectRandomNumberGenerators()
+    {
+        $itemList = $this->getRandomItemsList(200, 2);
+
+        mt_srand(42);
+        srand(42);
+        $expected = [mt_rand(), rand()];
+
+        mt_srand(42);
+        srand(42);
+        new KDTree($itemList);
+
+        $this->assertSame($expected, [mt_rand(), rand()]);
+    }
+
+    /**
+     * @test
+     */
+    public function itShouldNotChangeGivenItemList()
+    {
+        $itemList = $this->getRandomItemsList(50, 2);
+        $items = $itemList->getItems();
+
+        new KDTree($itemList);
+
+        $this->assertSame($items, $itemList->getItems());
+    }
+
+    /**
+     * @test
+     */
+    public function itShouldBuildTreeFromItemsWithArbitraryArrayKeys()
+    {
+        $items = [];
+        for ($i = 1; $i <= 25; $i++) {
+            $items[$i * 10] = new Item($i, [$i % 5, $i % 7]);
+        }
+        $items['last'] = new Item(26, [3, 3]);
+
+        $itemList = new class($items) implements ItemListInterface
+        {
+            private $items;
+
+            public function __construct(array $items)
+            {
+                $this->items = $items;
+            }
+
+            public function addItem(ItemInterface $item)
+            {
+            }
+
+            public function getItems(): array
+            {
+                return $this->items;
+            }
+
+            public function getDimensionCount(): int
+            {
+                return 2;
+            }
+        };
+
+        $tree = new KDTree($itemList);
+
+        $this->checkTree($tree);
+        $ids = $this->getTreeIds($tree->getRoot());
+        sort($ids);
+        $this->assertSame(range(1, 26), $ids);
+    }
+
+    /**
      * item provider
      */
     public function itemProvider()
@@ -166,9 +283,7 @@ class KDTreeTest extends TreeTestCase
         $lists[] = $params;
 
         for ($i = 1; $i < 6; $i++) {
-            $list = $this->getRandomItemsList(100, $i);
-            $params[] = $list;
-            $lists[] = $params;
+            $lists[] = [$this->getRandomItemsList(100, $i)];
         }
 
         return $lists;

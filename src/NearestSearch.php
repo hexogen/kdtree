@@ -22,6 +22,11 @@ class NearestSearch extends SearchAbstract
     private $maxQueuedDistance;
 
     /**
+     * @var int number of places in the result that are not taken by an item yet
+     */
+    private $vacancies;
+
+    /**
      * @var PointInterface
      */
     private $point;
@@ -31,8 +36,9 @@ class NearestSearch extends SearchAbstract
      *
      * @api
      * @param PointInterface $point
-     * @param int $resultLength
-     * @return ItemInterface[]
+     * @param int $resultLength number of nearest items to return, nothing is returned if it is less than 1
+     * @return ItemInterface[] items ordered from the nearest one, not more than there are items in the tree
+     * @throws ValidationException if the point has wrong number of dimensions
      */
     public function search(PointInterface $point, int $resultLength = 1) : array
     {
@@ -43,7 +49,9 @@ class NearestSearch extends SearchAbstract
         $lowerBound = $this->tree->getMinBoundary();
         $root = $this->tree->getRoot();
 
-        if ($root == null) {
+        $resultLength = min($resultLength, $this->tree->getItemCount());
+
+        if ($root == null || $resultLength < 1) {
             return [];
         }
 
@@ -119,39 +127,39 @@ class NearestSearch extends SearchAbstract
 
     /**
      * Prepare queue for collecting nearest items.
-     * Queue size sets to be equal to result length or to tree size,
-     * if request result length is bigger then tree size
      *
-     * @param int $resultLength
-     * @return SplPriorityQueue
+     * @param int $resultLength number of items to collect, should not be bigger than the tree size
      */
     private function prepareQueue(int $resultLength)
     {
         $this->queue = new SplPriorityQueue();
         $this->queue->setExtractFlags(SplPriorityQueue::EXTR_PRIORITY);
 
-        $itemsInTree = $this->tree->getItemCount();
-
-        if ($itemsInTree < $resultLength) {
-            $resultLength = $itemsInTree;
-        }
-
-        for ($i = 0; $i < $resultLength; $i++) {
-            $this->queue->insert(null, INF);
-        }
-
+        $this->vacancies = $resultLength;
         $this->maxQueuedDistance = INF;
     }
 
     /**
-     * Add an item to the queue if distance to the point is less than max queued,
-     * after it removes an item with the biggest distance, to keep queue size constant
+     * Add an item to the queue. While the queue is not full every item is accepted (even one
+     * whose distance overflowed to INF), after that an item is added only if its distance to the
+     * point is less than max queued and the item with the biggest distance is removed,
+     * to keep queue size constant
      *
      * @param ItemInterface $item
      * @param float $distance
      */
     private function addToQueue(ItemInterface $item, float $distance)
     {
+        if ($this->vacancies > 0) {
+            $this->queue->insert($item, $distance);
+            $this->vacancies--;
+
+            if ($this->vacancies === 0) {
+                $this->maxQueuedDistance = $this->queue->current();
+            }
+            return;
+        }
+
         if ($distance >= $this->maxQueuedDistance) {
             return;
         }
@@ -408,6 +416,25 @@ class NearestSearch extends SearchAbstract
         );
     }
 
+    /**
+     * Search the nearer branch first, then the other one only if it can still
+     * contain an item closer than the farthest queued one
+     *
+     * @internal it is a step of the search and is not meant to be called directly,
+     * the method is public only for backward compatibility
+     *
+     * @param NodeInterface $firstNode
+     * @param NodeInterface $secondNode
+     * @param array $firstUpperBound
+     * @param array $firstLowerBound
+     * @param array $secondUpperBound
+     * @param array $secondLowerBound
+     * @param array $firstOrthogonalDistances
+     * @param array $secondOrthogonalDistances
+     * @param float $firstPossibleDistance
+     * @param float $secondPossibleDistance
+     * @param int $nextDimension
+     */
     public function prioritySearch(
         NodeInterface $firstNode,
         NodeInterface $secondNode,
@@ -422,7 +449,7 @@ class NearestSearch extends SearchAbstract
         int $nextDimension
     ) {
 
-        if ($firstPossibleDistance < $this->maxQueuedDistance) {
+        if ($this->vacancies > 0 || $firstPossibleDistance < $this->maxQueuedDistance) {
             $this->searchNearest(
                 $firstNode,
                 $nextDimension,
@@ -431,7 +458,7 @@ class NearestSearch extends SearchAbstract
                 $firstOrthogonalDistances,
                 $firstPossibleDistance
             );
-            if ($secondPossibleDistance < $this->maxQueuedDistance) {
+            if ($this->vacancies > 0 || $secondPossibleDistance < $this->maxQueuedDistance) {
                 $this->searchNearest(
                     $secondNode,
                     $nextDimension,
