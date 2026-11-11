@@ -161,6 +161,9 @@ class FSTreePersister implements TreePersisterInterface
     {
         $this->tempFilename = null;
 
+        // the target could have been changed since PHP has cached information about it
+        clearstatcache(true, $filename);
+
         if (!is_link($filename)) {
             $tempFilename = $filename . '.' . bin2hex(random_bytes(6)) . '.tmp';
             $handler = @fopen($tempFilename, 'xb');

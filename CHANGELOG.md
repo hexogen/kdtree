@@ -4,6 +4,15 @@ All Notable changes to `hexogen/kdtree` will be documented in this file.
 
 Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) principles.
 
+## v0.2.8 - 2026-11-12
+
+### Fixed
+- `FSTreePersister` (since v0.2.7) looked at the file it replaces through PHP's cache of file
+  information. If access rights of the file had been changed after PHP cached them, or the
+  file had been replaced with a symbolic link, the new file got the previous access rights or
+  the link was replaced instead of being written through. With PHP 7.4 it happened right
+  after `chmod()` in the same process. The cache is cleared for the target now.
+
 ## v0.2.7 - 2026-11-12
 
 Bug fix release of the 0.2 line. The public API and the binary file format are not changed:

@@ -316,6 +316,65 @@ class FSTreePersisterTest extends TreeTestCase
     }
 
     /**
+     * PHP caches file information, the cache is out of date
+     * if access rights are changed by another process
+     *
+     * @test
+     */
+    public function itShouldKeepAccessRightsThatAreChangedOutsideOfPhp()
+    {
+        if (DIRECTORY_SEPARATOR === '\\' || !function_exists('exec')) {
+            $this->markTestSkipped('chmod command is not available');
+        }
+
+        $path = self::STORAGE . '/rights.bin';
+        $saver = new FSTreePersister(self::STORAGE);
+        $saver->convert(new KDTree($this->getRandomItemsList(5, 2)), 'rights.bin');
+
+        chmod($path, 0640);
+        clearstatcache();
+        $this->assertSame(0640, fileperms($path) & 0777);
+        $this->assertFalse(is_link($path));
+
+        exec('chmod 604 ' . escapeshellarg($path));
+        $saver->convert(new KDTree($this->getRandomItemsList(5, 2)), 'rights.bin');
+
+        clearstatcache();
+        $this->assertSame(0604, fileperms($path) & 0777);
+    }
+
+    /**
+     * PHP caches file information, the cache is out of date
+     * if the file is replaced with a symbolic link by another process
+     *
+     * @test
+     */
+    public function itShouldWriteThroughSymbolicLinkThatIsCreatedOutsideOfPhp()
+    {
+        if (DIRECTORY_SEPARATOR === '\\' || !function_exists('exec')) {
+            $this->markTestSkipped('ln command is not available');
+        }
+
+        $target = self::STORAGE . '/link-target.bin';
+        $link = self::STORAGE . '/link.bin';
+        file_put_contents($target, 'previous contents');
+        file_put_contents($link, 'a file that becomes a link');
+        $this->assertFalse(is_link($link));
+        $this->assertSame(0, fileperms($link) & 0111);
+
+        exec('ln -sf ' . escapeshellarg($target) . ' ' . escapeshellarg($link));
+        $tree = new KDTree($this->getRandomItemsList(30, 2));
+        (new FSTreePersister(self::STORAGE))->convert($tree, 'link.bin');
+
+        clearstatcache();
+        $this->assertTrue(is_link($link));
+        $this->assertSame(['link-target.bin', 'link.bin'], $this->getStoredFiles());
+
+        $fsTree = new FSKDTree($target, new ItemFactory());
+        $this->assertSame($this->getTreeIds($tree->getRoot()), $this->getTreeIds($fsTree->getRoot()));
+    }
+
+    /**
      * @test
      */
     public function itShouldWriteThroughSymbolicLink()
